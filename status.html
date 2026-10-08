@@ -14,7 +14,8 @@ body{margin:0;background:var(--bg);color:var(--label);}
 .fs-lead{color:var(--sec);margin:0 0 20px;}
 .fs-grp{background:var(--card);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;}
 .fs-row{display:block;position:relative;}
-.fs-row+.fs-row::before{content:'';position:absolute;top:0;left:20px;right:0;height:.5px;background:var(--sep);}
+.fs-row.hid{display:none;}
+.fs-row:not(.hid)~.fs-row:not(.hid)::before{content:'';position:absolute;top:0;left:20px;right:0;height:.5px;background:var(--sep);}
 .fs-row summary,.fs-row .fs-sum{display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 16px 10px 20px;box-sizing:border-box;list-style:none;cursor:pointer;}
 .fs-row .fs-sum{cursor:default;}
 .fs-row summary::-webkit-details-marker{display:none;}
@@ -38,6 +39,13 @@ body{margin:0;background:var(--bg);color:var(--label);}
 .fs-chip.fs-review{color:var(--wait);background:var(--wait-bg);}
 .fs-chip.fs-held{color:var(--sec);background:var(--fill);}
 .fs-chip.fs-new{color:var(--acc);background:var(--new-bg);}
+.fs-seg{display:flex;background:var(--fill);border-radius:9px;padding:2px;margin:0 0 12px;}
+.fs-seg button{flex:1;border:0;background:transparent;color:var(--label);font:inherit;font-size:15px;height:32px;border-radius:7px;cursor:pointer;}
+.fs-seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);font-weight:600;}
+.fs-seg button span{color:var(--sec);font-weight:400;margin-left:4px;font-variant-numeric:tabular-nums;}
+.fs-h{font-size:13px;line-height:18px;color:var(--sec);font-weight:400;margin:0 20px 6px;}
+.fs-mine{margin:0 0 24px;}
+.fs-more{display:block;width:100%;border:0;background:none;color:var(--acc);font:inherit;font-size:15px;padding:14px 0 4px;cursor:pointer;}
 .fs-empty{padding:20px;color:var(--sec);text-align:center;}
 .fs-cap{font-size:13px;line-height:18px;color:var(--sec);margin:8px 20px 0;}
 :root{--new-bg:rgba(0,122,255,.12);--ok:#248A3D;--ok-bg:rgba(52,199,89,.14);--wait:#B25000;--wait-bg:rgba(255,149,0,.16);}
@@ -49,7 +57,9 @@ body{margin:0;background:var(--bg);color:var(--label);}
   <a class="back" href="index.html"><svg viewBox="0 0 10 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 8.5l7 7"/></svg>목차</a>
   <h1>처리 현황</h1>
   <p class="fs-lead">보낸 시각으로 찾아보세요</p>
-  <div class="fs-grp">
+  <section class="fs-mine" hidden><h2 class="fs-h">이 기기에서 보낸 제보</h2><div class="fs-grp"></div></section>
+  <div class="fs-seg" hidden><button type="button" data-v="open">진행 중<span></span></button><button type="button" data-v="done">완료<span></span></button></div>
+  <div class="fs-grp fs-list">
     <details class="fs-row" data-k="체육|2026-10-08T20:07"><summary><div class="fs-w"><span class="fs-t">10월 8일 오후 8:07</span><span class="fs-s">체육 · 10월 9일 반영</span></div><span class="fs-chip fs-fixed">반영</span><svg class="fs-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg></summary><div class="fs-x"><div><p class="fs-g">쪽지시험 &gt; 건강 운동 및 생활 습관 · 「개인차에 관한 원리」를 묻는데 답이 어색</p><p class="fs-g fs-why">물음이 다른 원리를 가리켜 문제 삭제</p></div></div></details>
     <details class="fs-row" data-k="과학|2026-10-08T19:59"><summary><div class="fs-w"><span class="fs-t">10월 8일 오후 7:59</span><span class="fs-s">과학 · 10월 9일 반영</span></div><span class="fs-chip fs-fixed">반영</span><svg class="fs-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg></summary><div class="fs-x"><div><p class="fs-g">쪽지시험 &gt; 감염병과 건강한 생활 · 감염병을 물었는데 답이 감염 과정</p><p class="fs-g fs-why">물음과 답 불일치로 문제 삭제</p></div></div></details>
     <details class="fs-row" data-k="실과|2026-10-08T16:35"><summary><div class="fs-w"><span class="fs-t">10월 8일 오후 4:35</span><span class="fs-s">실과 · 10월 8일 반영</span></div><span class="fs-chip fs-fixed">반영</span><svg class="fs-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg></summary><div class="fs-x"><div><p class="fs-g">인간 발달과 주도적 삶 &gt; 가정일 · 노작 교육의 교육적 의의 추가 요청</p><p class="fs-g fs-why">노작 교육의 신체 발달 의의 추가</p></div><a class="fs-go" href="10.%EC%8B%A4%EA%B3%BC.html#%EA%B0%80%EC%A0%95%EC%9D%BC" aria-label="노트에서 그 절 보기" title="노트에서 그 절 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></svg></a></div></details>
@@ -62,25 +72,46 @@ body{margin:0;background:var(--bg);color:var(--label);}
     <details class="fs-row" data-k="영어|2026-10-07T11:50"><summary><div class="fs-w"><span class="fs-t">10월 7일 오전 11:50</span><span class="fs-s">영어 · 10월 8일 반영</span></div><span class="fs-chip fs-fixed">반영</span><svg class="fs-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg></summary><div class="fs-x"><div><p class="fs-g">언어 습득 이론 &gt; 모국어 습득 이론 · 생득주의 줄 간격이 이상함</p><p class="fs-g fs-why">깨진 칸 배치 복구(같은 원인 23곳 포함)</p></div><a class="fs-go" href="3.%EC%98%81%EC%96%B4.html#%EB%AA%A8%EA%B5%AD%EC%96%B4_%EC%8A%B5%EB%93%9D_%EC%9D%B4%EB%A1%A0" aria-label="노트에서 그 절 보기" title="노트에서 그 절 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></svg></a></div></details>
     <details class="fs-row" data-k="실과|2026-10-03T09:25"><summary><div class="fs-w"><span class="fs-t">10월 3일 오전 9:25</span><span class="fs-s">실과 · 10월 3일 반영</span></div><span class="fs-chip fs-fixed">반영</span><svg class="fs-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg></summary><div class="fs-x"><div><p class="fs-g">디지털 사회와 인공지능 &gt; 프로그래밍 · 성취기준 해설이 좀 이상</p><p class="fs-g fs-why">성취기준 해설을 별책 전문으로 수정</p></div><a class="fs-go" href="10.%EC%8B%A4%EA%B3%BC.html#%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D" aria-label="노트에서 그 절 보기" title="노트에서 그 절 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></svg></a></div></details>
   </div>
+  <button type="button" class="fs-more" hidden>더 보기</button>
   <p class="fs-cap">10월 9일 기준 · 없으면 아직 확인 전</p>
 </div>
 <script>
 
 (function(){
-  var G=document.querySelector('.fs-grp'); if(!G) return;
-  var W=180000, KEEP=7*864e5, now=Date.now();
-  var have=[].map.call(document.querySelectorAll('.fs-row[data-k]'),function(r){ var k=r.dataset.k.split('|'); return {s:k[0],t:new Date(k[1]).getTime()}; });
-  var mine=[]; try{ mine=JSON.parse(localStorage.getItem('rn-fb-sent')||'[]').filter(function(x){ return x&&x.s&&now-x.t<KEEP; }); }catch(e){}
+  var L=document.querySelector('.fs-list'); if(!L) return;
+  var W=180000, PEND_KEEP=7*864e5, MINE_KEEP=60*864e5, PAGE=20, now=Date.now(), tab='', shown=PAGE;
+  var seg=document.querySelector('.fs-seg'), more=document.querySelector('.fs-more'), mineBox=document.querySelector('.fs-mine');
+  var key=function(r){ var k=r.dataset.k.split('|'); return {s:k[0],t:new Date(k[1]).getTime()}; };
+  var have=[].map.call(L.querySelectorAll('.fs-row[data-k]'),key);
+  var sent=[]; try{ sent=JSON.parse(localStorage.getItem('rn-fb-sent')||'[]').filter(function(x){ return x&&x.s&&now-x.t<MINE_KEEP; }); }catch(e){}
   function same(a,b){ return a.s===b.s && Math.abs(a.t-b.t)<=W; }
   var esc=function(x){ return String(x).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  function isOpen(r){ return r.classList.contains('fs-pend') || !!r.querySelector('.fs-review'); }
+  function render(){
+    var rows=[].slice.call(L.querySelectorAll('.fs-row')), open=rows.filter(isOpen), done=rows.filter(function(r){ return !isOpen(r); });
+    if(!tab) tab=open.length?'open':'done';
+    seg.hidden=false; seg.querySelector('[data-v="open"] span').textContent=open.length; seg.querySelector('[data-v="done"] span').textContent=done.length;
+    [].forEach.call(seg.querySelectorAll('button'),function(b){ b.classList.toggle('on', b.dataset.v===tab); });
+    var list=tab==='open'?open:done;
+    rows.forEach(function(r){ r.classList.add('hid'); });
+    list.forEach(function(r,i){ if(tab==='open' || i<shown) r.classList.remove('hid'); });
+    more.hidden=!(tab==='done' && done.length>shown);
+    var e=L.querySelector('.fs-empty'); if(!e){ e=document.createElement('div'); e.className='fs-empty'; L.appendChild(e); } if(e){ e.style.display=list.length?'none':''; e.textContent=tab==='open'?'진행 중인 제보가 없어요':'아직 받은 제보가 없어요'; }
+    var g=mineBox.querySelector('.fs-grp'); g.innerHTML='';
+    rows.forEach(function(r){ var k=r.dataset.k?key(r):r._k; if(k && sent.some(function(m){ return same(m,k); })){ var c=r.cloneNode(true); c.classList.remove('hid'); g.appendChild(c); } });
+    mineBox.hidden=!g.children.length;
+  }
+  seg.addEventListener('click',function(ev){ var b=ev.target.closest('button'); if(!b) return; tab=b.dataset.v; shown=PAGE; render(); });
+  more.addEventListener('click',function(){ shown+=PAGE; render(); });
   function draw(pend){
-    var all=pend.slice(); mine.forEach(function(m){ if(!all.some(function(p){ return same(p,m); })) all.push(m); });
+    var all=pend.slice(); sent.forEach(function(m){ if(now-m.t<PEND_KEEP && !all.some(function(p){ return same(p,m); })) all.push(m); });
     all=all.filter(function(p){ return !have.some(function(h){ return same(h,p); }); }).sort(function(a,b){ return b.t-a.t; });
-    [].forEach.call(G.querySelectorAll('.fs-pend'),function(r){ r.remove(); });
-    var e=G.querySelector('.fs-empty'); if(e) e.style.display=all.length?'none':'';
-    G.insertAdjacentHTML('afterbegin',all.map(function(p){ var d=new Date(p.t), h=d.getHours();
+    [].forEach.call(L.querySelectorAll('.fs-pend'),function(r){ r.remove(); });
+    L.insertAdjacentHTML('afterbegin',all.map(function(p){ var d=new Date(p.t), h=d.getHours();
       return '<div class="fs-row fs-pend"><div class="fs-sum"><div class="fs-w"><span class="fs-t">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+(h<12?'오전':'오후')+' '+(h%12||12)+':'+('0'+d.getMinutes()).slice(-2)
         +'</span><span class="fs-s">'+esc(p.s)+'</span></div><span class="fs-chip fs-new">접수됨</span><span class="fs-cv"></span></div></div>'; }).join(''));
+    [].forEach.call(L.querySelectorAll('.fs-pend'),function(r,i){ r._k=all[i]; });
+    render();
   }
   draw([]);
   var U='https://docs.google.com/spreadsheets/d/e/2PACX-1vTgYCftZOObbxcZS6GW8t19CDikJvKT9IRlrCDyX3yTvwHOultBYoE9sZ9HmKJ-qF9Sw5QaHpL8ZWx4/pub?gid=21&single=true&output=csv'; if(!U) return;

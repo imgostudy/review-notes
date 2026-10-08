@@ -90,7 +90,8 @@ const tip=function(btn,msg){ var t=document.querySelector('.rn-tip'); if(!t){ t=
 function check(){}
 $('s').onchange=fillG; $('g').onchange=fillP; $('t').oninput=check;
 
-(()=>{ const q=new URLSearchParams(location.search), s=q.get('s'); if(!s||!TOC[s]) return; $('s').value=s; fillG();
+(()=>{ const q=new URLSearchParams(location.search), s=q.get('s'); if(!s||!TOC[s]){ $('s').value='일반'; fillG(); return; }   // 첫 화면에서 오면 대개 일반 피드백(10-09) — 「일반」을 미리 골라 둔다 · 과목 페이지에서 오면 그 과목
+  $('s').value=s; fillG();
   const gi=TOC[s].findIndex(x=>x[0]===q.get('g')); if(gi<0) return; $('g').value=gi; fillP(); if(q.get('p')) $('p').value=q.get('p'); })();
 
 const CK='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';

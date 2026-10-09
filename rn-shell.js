@@ -32,6 +32,7 @@
    
    '.rn-a{display:none}@media (hover:hover){.rn-a{display:inline;margin-left:.35em;color:var(--ter);text-decoration:none;font-weight:400;opacity:0;transition:opacity .12s}'+
      '.rn-ah:hover .rn-a{opacity:.55}.rn-a:hover{opacity:1!important;color:var(--acc)}}'+
+   '.rn-hit{background:linear-gradient(rgba(255,206,0,.45),rgba(255,206,0,.45)) 0 50%/100% 1.15em no-repeat;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background-size 1.1s ease-out}.rn-hit.rn-hit-out{background-size:100% 0}'+   
    '.rn-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;padding:8px 14px;border-radius:18px;background:var(--label);color:var(--bg);font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.rn-toast.on{opacity:.92}'+
    
    'main.wrap .clpsd[hidden=until-found]{display:block!important;height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden}'+
@@ -97,6 +98,14 @@
   var on=null, hashT=0;
   
   var moved=!location.hash; ['wheel','touchmove','keydown','mousedown'].forEach(function(e){ addEventListener(e, function(){ moved=true; }, {passive:true, once:true}); });
+  
+  if(location.hash){ var hid=decodeURIComponent(location.hash.slice(1)), hel=document.getElementById(hid);
+    if(hel){ var hv=hel.tagName==='A'?(hel.closest('h1,h2,h3,h4,h5,.rn-h')||hel.parentElement):hel, hdone=false;
+      var hfix=function(){ if(moved) return; var y=hv.getBoundingClientRect().top+scrollY-12; if(Math.abs(y-scrollY)>4) scrollTo(0, Math.max(0,y)); };
+      var hfin=function(){ if(hdone) return; hdone=true; hfix(); var mk=document.createElement('span'); mk.className='rn-hit'; [].slice.call(hv.childNodes).forEach(function(n){ if(!(n.nodeType===1&&n.classList.contains('rn-a'))) mk.appendChild(n); }); hv.insertBefore(mk, hv.firstChild); setTimeout(function(){ mk.classList.add('rn-hit-out'); setTimeout(function(){ while(mk.firstChild) hv.insertBefore(mk.firstChild, mk); mk.remove(); },1200); },2600); };
+      if(document.fonts&&document.fonts.ready) document.fonts.ready.then(hfix);
+      if(document.readyState==='complete') setTimeout(hfin,600); else addEventListener('load', function(){ hfix(); setTimeout(hfin,600); });
+      setTimeout(hfin, 4000); } }
   
   var grps=[].slice.call(sb.querySelectorAll('details.tgrp')), curG=null;
   function openG(g){ if(!g||g===curG) return; curG=g; grps.forEach(function(d){ d.open=(d===g); }); }

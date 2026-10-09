@@ -100,9 +100,25 @@
   var moved=!location.hash; ['wheel','touchmove','keydown','mousedown'].forEach(function(e){ addEventListener(e, function(){ moved=true; }, {passive:true, once:true}); });
   
   if(location.hash){ var hid=decodeURIComponent(location.hash.slice(1)), hel=document.getElementById(hid);
-    if(hel){ var hv=hel.tagName==='A'?(hel.closest('h1,h2,h3,h4,h5,.rn-h')||hel.parentElement):hel, hdone=false;
-      var hfix=function(){ if(moved) return; var y=hv.getBoundingClientRect().top+scrollY-12; if(Math.abs(y-scrollY)>4) scrollTo(0, Math.max(0,y)); };
-      var hfin=function(){ if(hdone) return; hdone=true; hfix(); var mk=document.createElement('span'); mk.className='rn-hit'; [].slice.call(hv.childNodes).forEach(function(n){ if(!(n.nodeType===1&&n.classList.contains('rn-a'))) mk.appendChild(n); }); hv.insertBefore(mk, hv.firstChild); setTimeout(function(){ mk.classList.add('rn-hit-out'); setTimeout(function(){ while(mk.firstChild) hv.insertBefore(mk.firstChild, mk); mk.remove(); },1200); },2600); };
+    if(hel){ var hv=hel.tagName==='A'?(hel.closest('h1,h2,h3,h4,h5,.rn-h')||hel.parentElement):hel, hdone=false, hk=[];
+      
+      var hn=''; try{ hn=(new URLSearchParams(location.search).get('n')||'').replace(/\s+/g,''); }catch(e){}
+      if(hn){ var hw=document.createTreeWalker(document.body, 5), cs=[], hx; hw.currentNode=hel;
+        while((hx=hw.nextNode())){ if(hx.nodeType===1){ if(hx.tagName==='H2'&&!hx.contains(hel)&&hx!==hv) break; continue; }
+          if(hx.parentElement&&hx.parentElement.closest('.rn-a,script,style')) continue;
+          for(var ci=0, cv=hx.nodeValue; ci<cv.length; ci++) if(!/\s/.test(cv[ci])) cs.push([hx,ci,cv[ci]]);
+          if(cs.length>300000) break; }
+        var hat=cs.map(function(c){ return c[2]; }).join('').indexOf(hn);
+        if(hat>=0){ var seg=[]; cs.slice(hat, hat+hn.length).forEach(function(c){ var l=seg[seg.length-1]; if(l&&l[0]===c[0]) l[2]=c[1]+1; else seg.push([c[0],c[1],c[1]+1]); });
+          seg.forEach(function(g){ try{ var r=document.createRange(); r.setStart(g[0],g[1]); r.setEnd(g[0],g[2]); var sp=document.createElement('span'); r.surroundContents(sp); hk.push(sp); }catch(e){} });
+          if(hk.length&&!hk[0].getClientRects().length){ hk.forEach(function(sp){ var p=sp.parentNode; while(sp.firstChild) p.insertBefore(sp.firstChild, sp); p.removeChild(sp); p.normalize(); }); hk=[]; } } }
+      var tg=hk[0]||hv;
+      var hfix=function(){ if(moved) return; var y=Math.max(0, tg.getBoundingClientRect().top+scrollY-(hk.length?Math.round(innerHeight*.25):12)); if(Math.abs(y-scrollY)>4){ lastY=y; scrollTo(0, y); } bar.classList.remove('peek'); };   // lastY 먼저 — 위로 맞출 때 「위로 굴림」으로 읽혀 막대가 내려와 덮었다(10-09 패드) · 노드 줄은 화면 위에서 1/4에
+      var hfin=function(){ if(hdone) return; hdone=true; hfix();
+        if(!hk.length){ var mk=document.createElement('span'); [].slice.call(hv.childNodes).forEach(function(n){ if(!(n.nodeType===1&&n.classList.contains('rn-a'))) mk.appendChild(n); }); hv.insertBefore(mk, hv.firstChild); hk=[mk]; }
+        hk.forEach(function(sp){ sp.className='rn-hit'; });
+        try{ if(location.search) history.replaceState(history.state,'',location.pathname+location.hash); }catch(e){}
+        setTimeout(function(){ hk.forEach(function(sp){ sp.classList.add('rn-hit-out'); }); setTimeout(function(){ hk.forEach(function(sp){ var p=sp.parentNode; if(!p) return; while(sp.firstChild) p.insertBefore(sp.firstChild, sp); p.removeChild(sp); p.normalize(); }); },1200); },2600); };
       if(document.fonts&&document.fonts.ready) document.fonts.ready.then(hfix);
       if(document.readyState==='complete') setTimeout(hfin,600); else addEventListener('load', function(){ hfix(); setTimeout(hfin,600); });
       setTimeout(hfin, 4000); } }

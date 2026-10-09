@@ -106,9 +106,10 @@
       if(hn){ var hw=document.createTreeWalker(document.body, 5), cs=[], hx; hw.currentNode=hel;
         while((hx=hw.nextNode())){ if(hx.nodeType===1){ if(hx.tagName==='H2'&&!hx.contains(hel)&&hx!==hv) break; continue; }
           if(hx.parentElement&&hx.parentElement.closest('.rn-a,script,style')) continue;
-          for(var ci=0, cv=hx.nodeValue; ci<cv.length; ci++) if(!/\s/.test(cv[ci])) cs.push([hx,ci,cv[ci]]);
+          for(var ci=0, cv=hx.nodeValue, c0=cv.search(/\S/); ci<cv.length; ci++) if(!/\s/.test(cv[ci])) cs.push([hx,ci,cv[ci],ci===c0]);
           if(cs.length>300000) break; }
-        var hat=cs.map(function(c){ return c[2]; }).join('').indexOf(hn);
+        var hs=cs.map(function(c){ return c[2]; }).join(''), hat=hs.indexOf(hn);   // 줄 머리(텍스트 노드 첫 글자)에서 시작하는 것을 먼저 — 같은 말이 문장 중간에도 나올 때 용어 줄로
+        for(var h1=hat; h1>=0; h1=hs.indexOf(hn, h1+1)) if(cs[h1][3]){ hat=h1; break; }
         if(hat>=0){ var seg=[]; cs.slice(hat, hat+hn.length).forEach(function(c){ var l=seg[seg.length-1]; if(l&&l[0]===c[0]) l[2]=c[1]+1; else seg.push([c[0],c[1],c[1]+1]); });
           seg.forEach(function(g){ try{ var r=document.createRange(); r.setStart(g[0],g[1]); r.setEnd(g[0],g[2]); var sp=document.createElement('span'); r.surroundContents(sp); hk.push(sp); }catch(e){} });
           if(hk.length&&!hk[0].getClientRects().length){ hk.forEach(function(sp){ var p=sp.parentNode; while(sp.firstChild) p.insertBefore(sp.firstChild, sp); p.removeChild(sp); p.normalize(); }); hk=[]; } } }

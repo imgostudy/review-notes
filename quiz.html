@@ -336,8 +336,8 @@ $('bShGo').onclick=function(){ if(!odd||$('bShGo').disabled) return; var b=$('bS
     .catch(function(){ b.disabled=false; b.textContent='다시 보내기'; alert('보내지 못했어요'); }); };
 document.addEventListener('keydown', function(e){ if($('sh').classList.contains('on')||$('pk').classList.contains('on')){ if(e.key==='Escape'){ shut(); $('pk').classList.remove('on'); } return; }
   if($('vQ').classList.contains('qz-hide')||e.metaKey||e.ctrlKey||e.altKey) return;
-  var k=e.key.toLowerCase();
-  if(k===' '||k==='enter'){ e.preventDefault(); reveal(); } else if(k==='z'||k==='1') rate(false); else if(k==='c'||k==='2') rate(true); });
+  var k=e.key.toLowerCase(), cd=e.code||'';   
+  if(k===' '||k==='enter'){ e.preventDefault(); reveal(); } else if(k==='z'||k==='ㅋ'||cd==='KeyZ'||k==='1') rate(false); else if(k==='c'||k==='ㅊ'||cd==='KeyC'||k==='2') rate(true); });
 var QS=new URLSearchParams(location.search), FROM=QS.get('from'), NOTE=(QS.get('s')&&FROM)?encodeURIComponent(QS.get('s'))+'.html#rn-qz-'+encodeURIComponent(FROM):null;
 function backTo(a){ if(!NOTE) return; a.href=NOTE; a.lastChild.textContent='노트'; }
 if(NOTE){ backTo($('bBack1')); backTo($('bBack2')); $('bNote').href=NOTE; $('bNote').classList.remove('qz-hide'); }

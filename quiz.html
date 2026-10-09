@@ -192,6 +192,7 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 </div></div>
 <script>
 (function(){
+function rnFbId(){ try{ var v=localStorage.getItem('rn-fb-id'); if(!v){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', a=new Uint32Array(4); crypto.getRandomValues(a); v=''; for(var i=0;i<4;i++) v+=c[a[i]%c.length]; localStorage.setItem('rn-fb-id',v); } return v; }catch(e){ return ''; } }
 var FORM='https://docs.google.com/forms/d/e/1FAIpQLSfz6jnwKa5X7m2UGdgl0CS1w878pH9G4IJCBow2QKHcaJN0Yg/formResponse', E_SUBJ='entry.1832714038', E_TEXT='entry.524873215', KEY='rn_quiz_v1';
 var GO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></svg>';
 var CHK='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
@@ -331,7 +332,7 @@ $('bShX').onclick=shut; $('sh').onclick=function(e){ if(e.target===$('sh')) shut
 var tip=function(btn,msg){ var t=document.querySelector('.rn-tip'); if(!t){ t=document.createElement('div'); t.className='rn-tip'; document.body.appendChild(t); } var r=btn.getBoundingClientRect(); t.textContent=msg; t.style.left=(r.left+r.width/2)+'px'; t.style.top=(r.top-10)+'px'; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('on'); },1800); };
 $('bShGo').onclick=function(){ if(!odd||$('bShGo').disabled) return; var b=$('bShGo'); if(!$('shT').value.trim()){ tip(b,'어디가 이상한지 적어 주세요'); $('shT').focus(); return; } b.disabled=true; b.textContent='보내는 중…';
   var body=new URLSearchParams(); body.append(E_SUBJ, odd.sn);
-  body.append(E_TEXT, '[카드] '+odd.id+'\n[위치] 쪽지시험 > '+odd.t+(odd.m?' > '+odd.m:'')+'\n[내용] '+$('shT').value.trim());
+  body.append(E_TEXT, '[카드] '+odd.id+'\n[위치] 쪽지시험 > '+odd.t+(odd.m?' > '+odd.m:'')+'\n[내용] '+$('shT').value.trim()+(rnFbId()?'\n[보낸 이] #'+rnFbId():''));
   fetch(FORM,{method:'POST',mode:'no-cors',body:body}).then(function(){ try{var a=JSON.parse(localStorage.getItem('rn-fb-sent')||'[]');a.push({t:Date.now(),s:odd.sn});localStorage.setItem('rn-fb-sent',JSON.stringify(a.slice(-20)));}catch(e){} b.disabled=false; b.textContent='보내기'; $('shT').value=''; $('shOk').classList.remove('qz-hide'); })
     .catch(function(){ b.disabled=false; b.textContent='다시 보내기'; alert('보내지 못했어요'); }); };
 document.addEventListener('keydown', function(e){ if($('sh').classList.contains('on')||$('pk').classList.contains('on')){ if(e.key==='Escape'){ shut(); $('pk').classList.remove('on'); } return; }

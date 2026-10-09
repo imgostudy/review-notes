@@ -1,5 +1,6 @@
 
 (function(){
+  function rnFbId(){ try{ var v=localStorage.getItem('rn-fb-id'); if(!v){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', a=new Uint32Array(4); crypto.getRandomValues(a); v=''; for(var i=0;i<4;i++) v+=c[a[i]%c.length]; localStorage.setItem('rn-fb-id',v); } return v; }catch(e){ return ''; } }
   var TOC=window.RN_TOC||{}, FORM='https://docs.google.com/forms/d/e/1FAIpQLSfz6jnwKa5X7m2UGdgl0CS1w878pH9G4IJCBow2QKHcaJN0Yg/formResponse', E_SUBJ='entry.1832714038', E_TEXT='entry.524873215';
   var h1=document.querySelector('main.wrap h1'); var SUBJ=(h1?h1.textContent:document.title).replace(/^.*?(\d+\.)?/, function(m){return '';});
   var file=decodeURIComponent(location.pathname.split('/').pop()||''); var m=file.match(/^\d+\.(.+)\.html$/); if(m) SUBJ=m[1];
@@ -74,7 +75,7 @@
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
   send.onclick=function(){ if(send.disabled) return; if(!ta.value.trim()){ tip(send,'고칠 내용을 적어 주세요'); ta.focus(); return; } send.disabled=true; send.textContent='보내는 중…';
     var g=G[selG.value], where=[g&&g[0], selP.value].filter(Boolean).join(' > ');
-    var body=new URLSearchParams(); body.append(E_SUBJ, SUBJ); body.append(E_TEXT, (where?'[위치] '+where+'\n':'')+'[내용] '+ta.value.trim());
+    var body=new URLSearchParams(); body.append(E_SUBJ, SUBJ); body.append(E_TEXT, (where?'[위치] '+where+'\n':'')+'[내용] '+ta.value.trim()+(rnFbId()?'\n[보낸 이] #'+rnFbId():''));
     fetch(FORM,{method:'POST',mode:'no-cors',body:body}).then(function(){ try{var a=JSON.parse(localStorage.getItem('rn-fb-sent')||'[]');a.push({t:Date.now(),s:SUBJ});localStorage.setItem('rn-fb-sent',JSON.stringify(a.slice(-20)));}catch(e){} ta.value=''; send.disabled=false; send.textContent='보내기'; ok.style.display='block'; })
       .catch(function(){ send.disabled=false; send.textContent='다시 보내기'; alert('보내지 못했어요'); }); };
 })();

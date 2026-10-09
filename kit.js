@@ -54,7 +54,12 @@
   if(!document.documentElement.classList.contains('v2')) return;
 
   var STD=/\[\d+[가-힣]+\s?\d{2}-\d{2}\]/;
-   
+
+  var BLK=/^(DIV|UL|OL|TABLE|P|FIGURE|SECTION|DL|PRE|BLOCKQUOTE|DETAILS|H[1-6]|HR)$/;
+  function blk(x){
+    if(!x || x.children.length<2) return false;
+    return [].some.call(x.children, function(c){ return BLK.test(c.tagName); });
+  }
   function wrapGrps(cell, body){
      
     var sig=function(e){ if(!e || e.nodeType!==1) return ''; var s=e.className; if(e.children.length===1 && e.firstElementChild.classList.contains('stack')) s+='>stack'; return s; };
@@ -84,7 +89,7 @@
      
     var st=null;
     [':scope > .ind2 > .stack', ':scope > .stack', ':scope > .ind2', ':scope > .ind > .stack', ':scope > .ind'].some(function(q){
-      var x=body.querySelector(q); if(x && x.children.length>=2){ st=x; return true; } return false; });
+      var x=body.querySelector(q); if(blk(x)){ st=x; return true; } return false; });
     if(!st) return;
     var g=null, k=0, n0=0;
     [].slice.call(st.children).forEach(function(n){
@@ -97,7 +102,7 @@
     (function nest(parent, d){
       if(d>2) return;
       parent.querySelectorAll(':scope > .grp.k').forEach(function(gp){
-        var inner=gp.querySelector(':scope > .ind > .stack') || gp.querySelector(':scope > .ind'); if(!inner || inner.children.length<2) return;
+        var inner=gp.querySelector(':scope > .ind > .stack') || gp.querySelector(':scope > .ind'); if(!blk(inner)) return;
         var g2=null, has=false;
         [].slice.call(inner.children).forEach(function(x){
           if(x.classList.contains('ind') && g2){ g2.classList.add('k'); has=true; g2.appendChild(x); return; }

@@ -9,6 +9,12 @@
 })();
 
 (function(){
+  document.querySelectorAll('main .term br').forEach(function(b){
+    var s=document.createElement('span'); s.className='tbr'; s.textContent=' '; b.parentNode.replaceChild(s,b);
+  });
+})();
+
+(function(){
   var main=document.querySelector('main.wrap'); if(!main) return;
   var pgs=[].slice.call(main.querySelectorAll(':scope > section.pg')); if(!pgs.length) return;
   var foot=main.querySelector(':scope > .foot');

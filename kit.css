@@ -772,6 +772,14 @@ td>.ms.h1{vertical-align:-.25em;}
 tr:has(>td>.ms)>td{vertical-align:middle;height:2.4em;}
 .mid>.mt:only-child{font-size:1.7em;line-height:1.1;}   
 
+.desc .quiet,.term .quiet{display:inline-block;max-width:100%;}
+.term .tbr{display:block;height:0;overflow:hidden;}
+@media (max-width:560px){
+  .term .tbr{display:inline;height:auto;}
+  main .converge>.link{flex:0 1 auto !important;min-width:min-content !important;max-width:6.5em !important;}
+  main .converge>.stack,main .converge>.bracket{flex:1 1 auto;min-width:7.5em;}
+}
+
 /* 배포본: 라이트 = 순백(페이퍼 없음) */
 :root[data-theme="white"],:root[data-theme="paper"]{--bg:#FFFFFF; --card:#FFFFFF; --fill:#F2F2F7; --label:#1D1D1F; --sec:#6E6E73; --ter:#8E8E93; --sep:#E3E3E8; --glass:rgba(255,255,255,.78); --shadow:0 0 0 .5px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.04); --gshadow:0 0 0 .5px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.08); --acc:#007AFF; color-scheme:light;}
 @media (prefers-color-scheme:light){:root:not([data-theme]){--bg:#FFFFFF; --card:#FFFFFF; --fill:#F2F2F7; --label:#1D1D1F; --sec:#6E6E73; --ter:#8E8E93; --sep:#E3E3E8; --glass:rgba(255,255,255,.78); --shadow:0 0 0 .5px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.04); --gshadow:0 0 0 .5px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.08); --acc:#007AFF; color-scheme:light;}}

@@ -37,7 +37,16 @@
     '.rn-mm .t{display:flex;flex-direction:column;gap:1px}.rn-mm .t b{font-size:15px;font-weight:600}.rn-mm .t small{font-size:12px;color:var(--sec,var(--mk))}'+
     '.rn-mm .nt{margin:4px 4px 2px;padding:8px 6px 2px;border-top:.5px solid var(--sep);font-size:12px;line-height:17px;color:var(--sec,var(--mk))}'+
     '.rn-mm .nt u{text-decoration-color:var(--acc);text-underline-offset:2px}'+
-    '@media print{'+on+'{color:inherit!important;background:none!important}'+sel(' *')+'{color:inherit!important}.rn-mk,.rn-mm{display:none!important}}';
+    
+    '.rn-ty{position:absolute;z-index:40;display:flex;align-items:center;gap:4px;padding:2px;border-radius:8px;background:var(--card,var(--bg));box-shadow:0 0 0 1.5px var(--acc),0 4px 14px rgba(0,0,0,.12)}'+
+    '.rn-ty input{min-width:72px;border:0;outline:0;background:transparent;color:var(--label);font:inherit;padding:0 4px;height:calc(1.4em + 4px)}'+
+    '.rn-ty button{border:0;background:var(--fill);color:var(--label);font:inherit;font-size:13px;font-weight:600;height:calc(1.4em + 2px);padding:0 8px;border-radius:6px;cursor:pointer;white-space:nowrap}'+
+    '.rn-ty.bad{animation:rnTyX .28s}@keyframes rnTyX{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}'+
+    '.rn-tyok .rn-in,.rn-tyok.rn-in{color:#2A8A52!important}.rn-tyno .rn-in,.rn-tyno.rn-in{color:#D1453B!important}'+
+    'html[data-theme="dark"] .rn-tyok .rn-in,html[data-theme="dark"] .rn-tyok.rn-in{color:#62CC88!important}html[data-theme="dark"] .rn-tyno .rn-in,html[data-theme="dark"] .rn-tyno.rn-in{color:#FF7F74!important}'+
+    '@media (prefers-color-scheme:dark){html:not([data-theme]) .rn-tyok .rn-in,html:not([data-theme]) .rn-tyok.rn-in{color:#62CC88!important}html:not([data-theme]) .rn-tyno .rn-in,html:not([data-theme]) .rn-tyno.rn-in{color:#FF7F74!important}}'+
+    '.rn-mm .tg{margin-top:4px;border-top:.5px solid var(--sep);border-radius:0 0 9px 9px;padding-top:11px}'+
+    '@media print{.rn-ty{display:none!important}'+on+'{color:inherit!important;background:none!important}'+sel(' *')+'{color:inherit!important}.rn-mk,.rn-mm{display:none!important}}';
   document.head.appendChild(css);
   
   var parts=[].slice.call(main.querySelectorAll('.part'));
@@ -82,25 +91,57 @@
   main.addEventListener('click', function(ev){ if(mode==='off') return;
     var t=ev.target.closest('.rn-k,.rn-c,.rn-d,.rn-h'); while(t && !hidden(t)) t=t.parentElement && t.parentElement.closest('.rn-k,.rn-c,.rn-d,.rn-h');
     if(!t || !main.contains(t)) return;
-    if(!t.classList.contains('rn-show')){ ev.preventDefault(); ev.stopPropagation(); }
+    if(!t.classList.contains('rn-show')){ ev.preventDefault(); ev.stopPropagation(); if(typing()&&!t.classList.contains('rn-d')){ tyOpen(t); return; } }
     t.classList.toggle('rn-show'); }, true);
+  
+  var TKEY='rn_mask_type', ty=null;
+  function typing(){ var v='0'; try{ v=localStorage.getItem(TKEY)||'0'; }catch(e){} return mode==='term' && v==='1'; }
+  function ans(t){ var ps=t.classList.contains('rn-in')?[t]:[].slice.call(t.querySelectorAll('.rn-in')).filter(function(x){ return !x.parentElement.closest('.rn-in'); });
+    return ps.map(function(x){ return x.textContent; }).join(''); }
+  var norm=function(x){ return (x||'').toLowerCase().replace(/[\s·ㆍ・,.:;!?'"“”‘’「」『』()（）\[\]{}<>〈〉《》\-–—~/]/g,''); };
+  function tyClose(){ if(ty){ ty.box.remove(); ty=null; } }
+  function nextHidden(t){ var all=[].slice.call(main.querySelectorAll('.rn-k,.rn-c,.rn-h')).filter(function(e){ return hidden(e) && !e.classList.contains('rn-show') && e.getClientRects().length && !e.parentElement.closest('.rn-k:not(.rn-show),.rn-c:not(.rn-show),.rn-h:not(.rn-show)'); });
+    for(var i=0;i<all.length;i++) if(t.compareDocumentPosition(all[i])&4) return all[i]; return null; }
+  function reveal(t, cls){ t.classList.add('rn-show'); if(cls) t.classList.add(cls); }
+  function go(t){ tyClose(); var n=t&&nextHidden(t); if(!n) return; var r=n.getBoundingClientRect(); if(r.top<60||r.bottom>innerHeight-80) n.scrollIntoView({block:'center'}); tyOpen(n); }
+  function tyOpen(t){ tyClose(); var r=(t.querySelector('.rn-in')||t).getClientRects()[0]||t.getBoundingClientRect();
+    var box=document.createElement('div'); box.className='rn-ty'; box.innerHTML='<input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="가린 말 쓰기"><button type="button">보기</button>';
+    var cs=getComputedStyle(t.querySelector('.rn-in')||t); box.style.font=cs.font; box.style.left=Math.max(4, r.left+scrollX-4)+'px'; box.style.top=(r.top+scrollY-4)+'px';
+    var inp=box.firstChild; inp.style.width=Math.max(72, Math.round(r.width)+8)+'px'; document.body.appendChild(box);
+    var miss=0, want=norm(ans(t)); ty={box:box, t:t};
+    box.lastChild.onclick=function(ev){ ev.stopPropagation(); reveal(t); go(t); };
+    box.addEventListener('click', function(ev){ ev.stopPropagation(); });
+    inp.addEventListener('keydown', function(ev){
+      if(ev.isComposing||ev.keyCode===229) return;   // 한글 조합 중 Enter는 글자 확정만
+      if(ev.key==='Escape'){ ev.preventDefault(); reveal(t); tyClose(); }
+      else if(ev.key==='Tab'){ ev.preventDefault(); go(t); }
+      else if(ev.key==='Enter'){ ev.preventDefault(); var v=norm(inp.value); if(!v){ reveal(t); go(t); return; }
+        if(v===want){ reveal(t,'rn-tyok'); go(t); }
+        else if(++miss>=2){ reveal(t,'rn-tyno'); tyClose(); }
+        else { box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad'); inp.select(); } } });
+    setTimeout(function(){ inp.focus(); }, 0); }
+  document.addEventListener('click', function(ev){ if(ty && !ty.box.contains(ev.target)) tyClose(); }, true);   // 화면 크기 바뀜으로는 닫지 않는다(폰·패드 키보드가 올라올 때 resize가 난다)
   
   var mm=document.createElement('div'); mm.className='rn-mm'; mm.setAttribute('role','menu');
   mm.innerHTML=ITEMS.map(function(x){ return '<button type="button" role="menuitemradio" data-m="'+x[0]+'"><span class="ck">'+CHECK+'</span><span class="t"><b>'+x[1]+'</b>'+(x[2]?'<small>'+x[2]+'</small>':'')+'</span></button>'; }).join('')+
+    '<button type="button" class="tg" role="menuitemcheckbox" data-t="1"><span class="ck">'+CHECK+'</span><span class="t"><b>타이핑으로 열기</b><small>개념어 마스킹에서 · 모르면 보기</small></span></button>'+
     '<div class="nt">교육과정 글은 어느 쪽이든 <u>밑줄 친 핵심어</u>만 가려요 · 가린 칸을 누르면 열려요</div>';
   document.body.appendChild(mm);
   var btns=[], opener=null;
   function paint(){ document.body.classList.toggle('rn-m-term', mode==='term'); document.body.classList.toggle('rn-m-desc', mode==='desc');
     btns.forEach(function(b){ b.innerHTML=(mode==='off'?BOX:BOXF)+'<span>마스킹</span>'; b.classList.toggle('on', mode!=='off'); b.setAttribute('aria-label','마스킹 — 지금 '+BTN[mode]); b.title=b.getAttribute('aria-label'); });
-    [].forEach.call(mm.querySelectorAll('button'), function(x){ x.classList.toggle('sel', x.dataset.m===mode); x.setAttribute('aria-checked', x.dataset.m===mode); }); }
+    [].forEach.call(mm.querySelectorAll('button[data-m]'), function(x){ x.classList.toggle('sel', x.dataset.m===mode); x.setAttribute('aria-checked', x.dataset.m===mode); });
+    var tv='0'; try{ tv=localStorage.getItem(TKEY)||'0'; }catch(e){} var tb=mm.querySelector('button[data-t]'); tb.classList.toggle('sel', tv==='1'); tb.setAttribute('aria-checked', tv==='1'); }
   function close(){ mm.classList.remove('on'); if(opener) opener.setAttribute('aria-expanded','false'); opener=null; }
   function open(b){ var r=b.getBoundingClientRect(); mm.classList.add('on');
     mm.style.top=(r.bottom+6)+'px'; mm.style.left=Math.max(8, Math.min(innerWidth-mm.offsetWidth-8, r.right-mm.offsetWidth))+'px';
     opener=b; b.setAttribute('aria-expanded','true'); }
-  mm.addEventListener('click', function(ev){ var x=ev.target.closest('button[data-m]'); if(!x) return;
+  mm.addEventListener('click', function(ev){ var tb=ev.target.closest('button[data-t]');
+    if(tb){ var tv='0'; try{ tv=localStorage.getItem(TKEY)||'0'; localStorage.setItem(TKEY, tv==='1'?'0':'1'); }catch(e){} tyClose(); paint(); return; }
+    var x=ev.target.closest('button[data-m]'); if(!x) return;
     var to=(x.dataset.m===mode && mode!=='off')?'off':x.dataset.m;   // 체크된 것을 다시 누르면 끈다(10-08)
     if(to!==mode){ mode=to; try{ localStorage.setItem(KEY,mode); }catch(e){}
-      [].forEach.call(main.querySelectorAll('.rn-show'), function(e){ e.classList.remove('rn-show'); }); paint(); }
+      [].forEach.call(main.querySelectorAll('.rn-show'), function(e){ e.classList.remove('rn-show','rn-tyok','rn-tyno'); }); tyClose(); paint(); }
     close(); });
   document.addEventListener('click', function(ev){ if(opener && !mm.contains(ev.target) && !opener.contains(ev.target)) close(); }, true);
   document.addEventListener('keydown', function(ev){ if(ev.key==='Escape' && opener) close(); });

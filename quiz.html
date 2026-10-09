@@ -105,6 +105,13 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 .qz-a.qmid{font-size:28px;line-height:1.35;} .qz-a.body{font-size:19px;line-height:1.5;font-weight:500;}
 .qz-ans ol{margin:10px 0 0;padding-left:1.4em;font-size:17px;}
 .qz-cover{position:absolute;inset:10px 0;border-radius:20px;background:var(--q-fill);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--q-sec);text-align:center;padding:0 16px;}
+
+.qz-cover.wr{padding:0;align-items:stretch;cursor:text;}
+.qz-cover.wr:focus-within{box-shadow:inset 0 0 0 2px var(--q-acc);}   
+.qz-cover textarea{flex:1;border:0;background:transparent;resize:none;font:inherit;font-size:17px;line-height:1.5;padding:14px 16px;color:var(--q-label);outline:0;border-radius:20px;text-align:left;}
+.qz-cover textarea::placeholder{color:var(--q-ter);}
+.qz-mine{margin:0 0 12px;font-size:16px;line-height:1.5;color:var(--q-sec);white-space:pre-wrap;}
+.qz-mine b{display:block;font-size:13px;font-weight:600;margin-bottom:2px;}
 .qz-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto;padding-top:8px;border-top:.5px solid var(--q-sep);}
 .qz-meta a,.qz-meta button{color:var(--q-sec);text-decoration:none;background:none;border:0;padding:6px 0;cursor:pointer;font-size:14px;}#qNote{color:var(--q-acc);}
 .qz-acts{width:100%;max-width:900px;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -138,6 +145,7 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
     <button class="qz-row" type="button" id="bRange"><span class="qk">범위</span><span class="v" id="sRange"></span><svg class="qz-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg></button>
     <div class="qz-row"><span class="qk">문항 수</span><span class="qz-nv" id="sNv"></span><span class="qz-step"><button type="button" id="sNm" aria-label="줄이기"><svg viewBox="0 0 16 16"><path d="M3.5 8h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><i></i><button type="button" id="sNp" aria-label="늘리기"><svg viewBox="0 0 16 16"><path d="M3.5 8h9M8 3.5v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></span></div>
     <div class="qz-row"><label class="qk" for="sW">틀린 문제만</label><input type="checkbox" class="qz-sw" id="sW" role="switch"></div>
+    <div class="qz-row"><label class="qk" for="sWr">써 보기</label><input type="checkbox" class="qz-sw" id="sWr" role="switch"></div>
   </div>
   <p class="qz-cap" id="sInfo"></p>
   <button class="qz-main" id="bGo" type="button">시작</button>
@@ -153,7 +161,7 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
     <div class="qz-hd"><span class="p" id="qWhere"></span><span class="why" id="qWhy"></span></div>
     <div class="qz-top"><p class="qz-q" id="qQ"></p><div id="qImgF"></div></div>
     <div class="qz-line"></div>
-    <div class="qz-bot"><div class="qz-ans" id="qAns"><p class="qz-lab">정답</p><div class="qz-a" id="qA"></div><ol id="qItems" class="qz-hide"></ol><div id="qImgB"></div></div><div class="qz-cover" id="qCover">카드를 누르면 정답이 보여요</div></div>
+    <div class="qz-bot"><div class="qz-ans" id="qAns"><p class="qz-mine qz-hide" id="qMine"></p><p class="qz-lab">정답</p><div class="qz-a" id="qA"></div><ol id="qItems" class="qz-hide"></ol><div id="qImgB"></div></div><div class="qz-cover" id="qCover"><span id="qCoverT">카드를 누르면 정답이 보여요</span><textarea id="qIn" class="qz-hide" placeholder="생각나는 답을 써 보세요 · Enter = 정답 보기" aria-label="답 써 보기"></textarea></div></div>
     <div class="qz-meta"><button type="button" id="bOdd">이 문제 이상해요</button><a id="qNote" target="_blank" rel="noopener">노트 ↗</a></div>
   </div>
   <div class="qz-acts" id="aShow"><button class="show" type="button" id="bShow">정답 보기 <span class="qz-kbd">Space</span></button></div>
@@ -293,13 +301,19 @@ function paint(){ var c=run.list[run.i], n=run.list.length; revealed=false;
   img($('qImgF'), c, 'f'); img($('qImgB'), c, 'b');
   var a=$('qNote'); if(c.h){ a.href=c.h; a.classList.remove('qz-hide'); } else a.classList.add('qz-hide');
   $('qAns').style.visibility='hidden'; $('qCover').classList.remove('qz-hide');
+  var wr=$('sWr').checked, qi=$('qIn'); $('qCover').classList.toggle('wr', wr); $('qCoverT').classList.toggle('qz-hide', wr); qi.classList.toggle('qz-hide', !wr); qi.value=''; $('qMine').classList.add('qz-hide');
+  if(wr && matchMedia('(pointer:fine)').matches) setTimeout(function(){ qi.focus(); }, 0);   // 키보드 기기만 바로 커서(폰은 누를 때 자판이 뜨게)
   $('aShow').classList.remove('qz-hide'); $('aRate').classList.add('qz-hide'); }
 function reveal(){ if(!run||$('vQ').classList.contains('qz-hide')||revealed) return; revealed=true;
+  var qi=$('qIn'), mine=$('sWr').checked?qi.value.trim():''; qi.blur(); if(mine){ $('qMine').innerHTML='<b>내 답</b>'+esc(mine); $('qMine').classList.remove('qz-hide'); }
   $('qAns').style.visibility=''; $('qCover').classList.add('qz-hide'); $('aShow').classList.add('qz-hide'); $('aRate').classList.remove('qz-hide'); }
 function rate(ok){ if(!run||!revealed) return; var c=run.list[run.i], r=rec[c.id]||[0,0,0,0];
   r[0]++; if(ok) r[1]++; r[2]=Date.now(); r[3]=ok?1:0; rec[c.id]=r; save(); run.res.push(ok);
   run.i++; if(run.i<run.list.length) paint(); else result(); }
-$('bShow').onclick=reveal; $('qCard').onclick=function(e){ if(e.target.closest('a,button')) return; reveal(); };
+$('bShow').onclick=reveal; $('qCard').onclick=function(e){ if(e.target.closest('a,button,textarea')) return; reveal(); };
+$('qIn').addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey && !e.isComposing && e.keyCode!==229){ e.preventDefault(); reveal(); } e.stopPropagation(); });   // 쓰는 동안은 Space·Z·C 단축키를 막는다
+try{ $('sWr').checked=localStorage.getItem(KEY+'_wr')==='1'; }catch(e){}
+$('sWr').onchange=function(){ try{ localStorage.setItem(KEY+'_wr', this.checked?'1':'0'); }catch(e){} };
 $('bOk').onclick=function(){ rate(true); }; $('bNo').onclick=function(){ rate(false); };
 $('bQuit').onclick=function(){ if(run&&run.res.length) result(); else { run=null; show('vSet'); info(); } };
 function result(){ if(!run.logged){ run.logged=1; gcEv('quiz/done'); } var done=run.res.length, ok=run.res.filter(Boolean).length, wr=run.list.slice(0,done).filter(function(c,i){ return !run.res[i]; });

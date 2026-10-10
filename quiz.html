@@ -289,7 +289,11 @@ function pick(p){ var lim=nCur()||p.length, g={}, ks=[];
 function show(v){ ['vSet','vQ','vR'].forEach(function(x){ $(x).classList.toggle('qz-hide', x!==v); }); scrollTo(0,0); }
 
 function gcEv(p){ try{ var g=window.goatcounter; if(g&&g.count) g.count({path:String(p).slice(0,180), title:String(p).slice(0,180), event:true}); }catch(e){} }
-function start(list, again){ if(!again) gcEv('quiz/start/'+(selN()?rangeText():'전체')); run={list:list, i:0, res:[]}; $('qName').textContent=selN()?rangeText():'쪽지시험'; show('vQ'); paint(); }
+
+var QS_DB='https://rn-feedback-signal-default-rtdb.asia-southeast1.firebasedatabase.app/.json';
+function qsUp(id, ok){ try{ if(!/^[0-9a-f]{16}$/.test(id)) return; var b={}; b['qs/'+id+'/n']={'.sv':{increment:1}}; if(ok) b['qs/'+id+'/k']={'.sv':{increment:1}};
+  fetch(QS_DB,{method:'PATCH', body:JSON.stringify(b), keepalive:true}).catch(function(){}); }catch(e){} }
+function start(list, again){ if(!again) gcEv('quiz/start/'+(selN()?rangeText():'전체')); run={list:list, i:0, res:[], again:!!again}; $('qName').textContent=selN()?rangeText():'쪽지시험'; show('vQ'); paint(); }
 $('bGo').onclick=function(){ start(pick(pool())); };
 function img(box, c, on){ box.innerHTML=''; (c.img||[]).forEach(function(m){ if(m.on!==on) return; var i=document.createElement('img'); i.className='qz-img'; i.src=m.p; i.alt='문제 그림'; i.loading='lazy'; box.appendChild(i); }); }
 var revealed=false;
@@ -311,7 +315,7 @@ function reveal(){ if(!run||$('vQ').classList.contains('qz-hide')||revealed) ret
   var qi=$('qIn'), mine=$('sWr').checked?qi.value.trim():''; qi.blur(); if(mine){ $('qMine').innerHTML='<b>내 답</b>'+esc(mine); $('qMine').classList.remove('qz-hide'); }
   $('qAns').style.visibility=''; $('qCover').classList.add('qz-hide'); $('aShow').classList.add('qz-hide'); $('aRate').classList.remove('qz-hide'); }
 function rate(ok){ if(!run||!revealed) return; var c=run.list[run.i], r=rec[c.id]||[0,0,0,0];
-  r[0]++; if(ok) r[1]++; r[2]=Date.now(); r[3]=ok?1:0; rec[c.id]=r; save(); run.res.push(ok); if(window.RNSync) RNSync.mark(c.id);
+  r[0]++; if(ok) r[1]++; r[2]=Date.now(); r[3]=ok?1:0; rec[c.id]=r; save(); run.res.push(ok); if(window.RNSync) RNSync.mark(c.id); if(!run.again) qsUp(c.id, ok);
   run.i++; if(run.i<run.list.length) paint(); else result(); }
 $('bShow').onclick=reveal; $('qCard').onclick=function(e){ if(e.target.closest('a,button,textarea')) return; reveal(); };
 $('qIn').addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey && !e.isComposing && e.keyCode!==229){ e.preventDefault(); reveal(); } e.stopPropagation(); });   // 쓰는 동안은 Space·Z·C 단축키를 막는다

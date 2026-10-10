@@ -28,7 +28,7 @@
    '.tocbtn,.rn-tg,.rn-fab{display:none!important}'+
    '.sidebar{left:0;bottom:0;border-radius:0;box-shadow:0 0 0 .5px var(--sep);background:var(--bg);width:280px;padding:20px 20px 32px;display:flex;flex-direction:column}'+
    '.sidebar>.toc-view,.sidebar>.list-view{flex:1 0 auto}.sidebar .tochead{display:none}'+
-   '.tnav a.rn-on,.tgrp>summary .gh.rn-on{color:var(--acc)!important;font-weight:600}'+
+   '.tnav a.rn-on,.tgrp>summary .gh.rn-on,.tgrp.one .gh.rn-on{color:var(--acc)!important;font-weight:600}'+
    
    '.rn-a{display:none}@media (hover:hover){.rn-a{display:inline;margin-left:.35em;color:var(--ter);text-decoration:none;font-weight:400;opacity:0;transition:opacity .12s}'+
      '.rn-ah:hover .rn-a{opacity:.55}.rn-a:hover{opacity:1!important;color:var(--acc)}}'+

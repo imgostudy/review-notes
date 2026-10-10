@@ -150,7 +150,6 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 .qz-sy-2{display:flex;gap:8px;margin-top:10px;} .qz-sy-2 .qz-main{flex:1;margin:0;}
 .qz-sy-keep{margin:16px 2px 0;font-size:14px;line-height:20px;color:var(--q-sec);} .qz-sy-keep b{color:var(--q-label);}   
 .qz-sy-t b{color:var(--q-label);}
-.qz-sy-art{display:flex;justify-content:center;color:var(--q-acc);margin:2px 0 16px;} .qz-sy-art svg{width:132px;height:40px;}
 .qz-sy-t:empty{display:none;}
 .qz-sy-st{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;line-height:18px;color:var(--q-sec);font-variant-numeric:tabular-nums;} .qz-sy-st i{width:8px;height:8px;border-radius:4px;background:#34C759;}
 .qz-main:disabled{opacity:.35;cursor:default;}
@@ -205,7 +204,6 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 
 <div class="qz-sheet" id="sy" role="dialog" aria-label="기기 연동"><div class="qz-odd">
   <div class="qh"><b>기기 연동</b><button class="qz-x" type="button" id="bSyX" aria-label="닫기">✕</button></div>
-  <div class="qz-sy-art" aria-hidden="true"><svg viewBox="0 0 132 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="14" height="24" rx="3"/><path d="M9.5 29.5h3"/><rect x="50" y="7" width="30" height="26" rx="3.5"/><path d="M62 29.5h6"/><path d="M100 10h24a2 2 0 0 1 2 2v15H98V12a2 2 0 0 1 2-2z"/><path d="M94 31h36"/><path d="M23 21h22M85 21h8" stroke-dasharray="2 4"/></svg></div>
   <div id="syOff">
     <div class="qz-sy-in"><input id="syCode" placeholder="다른 기기의 연동 코드" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" aria-label="연동 코드"><button class="qz-main" type="button" id="bSyGo">연결</button></div>
     <button class="qz-link qz-sy-alt" type="button" id="bSyFirst">처음 연동하나요? 새 코드 만들기</button>

@@ -172,6 +172,11 @@
       if(steps && steps<=3) c.classList.add('nw');
     });
   })();
+   
+  document.querySelectorAll('main.wrap .vchain').forEach(function(v){
+    var an=[].filter.call(v.children, function(x){ return x.classList.contains('ann') && x.textContent.trim(); });
+    if(an.length && an.every(function(x){ return x.textContent.replace(/\s+/g,' ').trim().length<=16; })) v.classList.add('pside');
+  });
   document.querySelectorAll('main.wrap .vchain:not(.conv)').forEach(function(v){
     if(v.classList.contains('keepv')) return;    
     if(![].some.call(v.querySelectorAll('.ann'), function(x){ return x.textContent.trim(); })) v.classList.add('hz');

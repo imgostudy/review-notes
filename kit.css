@@ -800,6 +800,8 @@ tr:has(>td>.ms)>td{vertical-align:middle;height:2.4em;}
 
 @media (max-width:950px){ :root.v2 .blk table.cgrid.cg-tight td:not(.h){min-width:2.3em;} :root.v2 .blk table.cgrid.cg-tight th{padding:6px .3em;} }
 
+@media (max-width:500px){ .vchain.pside{grid-template-columns:minmax(0,max-content) minmax(0,1fr) !important;} .vchain.pside>.ann{grid-column:2 !important;padding-left:0 !important;} }
+
 /* 배포본: 라이트 = 순백(페이퍼 없음) */
 :root[data-theme="white"],:root[data-theme="paper"]{--bg:#FFFFFF; --card:#FFFFFF; --fill:#F2F2F7; --label:#1D1D1F; --sec:#6E6E73; --ter:#8E8E93; --sep:#E3E3E8; --glass:rgba(255,255,255,.78); --shadow:0 0 0 .5px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.04); --gshadow:0 0 0 .5px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.08); --acc:#007AFF; color-scheme:light;}
 @media (prefers-color-scheme:light){:root:not([data-theme]){--bg:#FFFFFF; --card:#FFFFFF; --fill:#F2F2F7; --label:#1D1D1F; --sec:#6E6E73; --ter:#8E8E93; --sep:#E3E3E8; --glass:rgba(255,255,255,.78); --shadow:0 0 0 .5px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.04); --gshadow:0 0 0 .5px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.08); --acc:#007AFF; color-scheme:light;}}

@@ -190,6 +190,13 @@
         var leaves=[].every.call(k.children, function(c){ return !c.querySelector('.branch, .bracket, .kids, .mk, .sub') && c.querySelectorAll('.term, .desc').length<=1 && c.textContent.trim().length<=24; });
         if(leaves && k.children.length<=4 && k.textContent.replace(/\s+/g,' ').trim().length<=70) b.classList.add('cline');    
       });
+       
+      tr.querySelectorAll('.bracket, .kids').forEach(function(k){
+        var sib=[].filter.call(k.children, function(c){ return c.classList.contains('branch') && kidsOf(c); });
+        if(sib.length>1 && sib.some(function(c){ return !c.classList.contains('cline'); })) sib.forEach(function(c){ c.classList.remove('cline'); });
+      });
+      (function(k){ var sib=[].filter.call(tr.children, function(c){ return c.classList.contains('branch') && kidsOf(c); });
+        if(sib.length>1 && sib.some(function(c){ return !c.classList.contains('cline'); })) sib.forEach(function(c){ c.classList.remove('cline'); }); })();
       [].forEach.call(tr.children, function(c){ if(c.classList.contains('branch')) c.classList.add('ccell'); });
     });
   }

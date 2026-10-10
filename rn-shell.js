@@ -136,6 +136,22 @@
         if(r.top<s.top+40||r.bottom>s.bottom-80){ sb._rnAuto=true; sb.scrollTop+=r.top-s.top-s.height/3; setTimeout(function(){ sb._rnAuto=false; },50); } } } }
   spy();
   
+  function markHere(){ var el=on&&document.getElementById(decodeURIComponent(on.getAttribute('href').slice(1)));
+    return el?{id:el.id, off:Math.round(el.getBoundingClientRect().top)}:{y:Math.round(scrollY)}; }
+  function rnJump(id){ var el=document.getElementById(id); if(!el) return false;
+    var st=history.state||{}, h='#'+encodeURIComponent(id).replace(/%2F/g,'/');
+    try{ if(!st.rnj){ history.replaceState(Object.assign({}, st, {rnBack:markHere()}), '', location.href); history.pushState({rnj:1}, '', h); }
+      else history.replaceState({rnj:1}, '', h); }
+    catch(e){ return false; }
+    moved=true; window.dispatchEvent(new HashChangeEvent('hashchange'));
+    setTimeout(function(){ var e2=document.getElementById(id); if(e2) e2.scrollIntoView({block:'start'}); }, 30); return true; }
+  window.rnJump=rnJump;
+  sb.addEventListener('click', function(ev){ var a=ev.target.closest('a[href^="#"]'); if(!a||ev.metaKey||ev.ctrlKey||ev.shiftKey) return;
+    if(rnJump(decodeURIComponent(a.getAttribute('href').slice(1)))) ev.preventDefault(); });
+  addEventListener('popstate', function(ev){ var b=ev.state&&ev.state.rnBack; if(!b) return;
+    var go=function(){ var el=b.id&&document.getElementById(b.id); if(el) scrollTo(0, Math.max(0, el.getBoundingClientRect().top+scrollY-b.off)); else if(b.y!=null) scrollTo(0, b.y); };
+    go(); setTimeout(go, 60); });
+  
   var toast=document.createElement('div'); toast.className='rn-toast'; document.body.appendChild(toast); var toT=0;
   function say(t){ toast.textContent=t; toast.classList.add('on'); clearTimeout(toT); toT=setTimeout(function(){ toast.classList.remove('on'); },1400); }
   links.forEach(function(x){ var id=x[1].id, el=x[1];   // 판의 표지는 제목 앞 빈 <a id> · 과목 묶음 <div id> — 붙일 자리는 그 제목

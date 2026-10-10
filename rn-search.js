@@ -161,8 +161,9 @@
     try{ sessionStorage.setItem('rn_sx_hit', id); }catch(er){}
     if(f!==FILE) return;
     e.preventDefault(); close(); if(fields.indexOf(inp)>=0) inp.blur();
-    if(decodeURIComponent(location.hash.slice(1))===id) history.replaceState(null,'',location.pathname+location.search);
-    location.hash=encodeURIComponent(id).replace(/%2F/g,'/');
+    if(!(window.rnJump&&window.rnJump(id))){   
+      if(decodeURIComponent(location.hash.slice(1))===id) history.replaceState(null,'',location.pathname+location.search);
+      location.hash=encodeURIComponent(id).replace(/%2F/g,'/'); }
     setTimeout(function(){ var el=document.getElementById(id); if(el) el.scrollIntoView({block:'start'}); flash(id); }, 60);
   });
   try{ var hid=sessionStorage.getItem('rn_sx_hit'); if(hid){ sessionStorage.removeItem('rn_sx_hit'); if(decodeURIComponent(location.hash.slice(1))===hid) setTimeout(function(){ flash(hid); }, 400); } }catch(er){}

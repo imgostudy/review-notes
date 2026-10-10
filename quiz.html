@@ -146,6 +146,10 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 .qz-sy-code{margin:14px 0 4px;padding:14px 0;border-radius:14px;background:var(--q-fill);text-align:center;font-size:24px;line-height:30px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums;color:var(--q-label);user-select:all;-webkit-user-select:all;}
 .qz-sy-off{display:block;margin:18px auto 0;color:#FF3B30;font-size:15px;}
 .qz-sy-err{color:#FF3B30;}
+.qz-sy-alt{display:block;margin:18px auto 0;font-size:15px;}
+.qz-sy-2{display:flex;gap:8px;margin-top:10px;} .qz-sy-2 .qz-main{flex:1;margin:0;}
+.qz-sy-keep{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:var(--q-fill);font-size:14px;line-height:20px;color:var(--q-label);}
+.qz-sy-t b{color:var(--q-label);}
 </style>
 <div class="qz-in" id="vSet">
   <a class="qz-back" href="index.html" id="bBack1"><svg viewBox="0 0 10 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 8.5l7 7"/></svg>목차</a>
@@ -198,15 +202,21 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 <div class="qz-sheet" id="sy" role="dialog" aria-label="기기 연동"><div class="qz-odd">
   <div class="qh"><b>기기 연동</b><button class="qz-x" type="button" id="bSyX" aria-label="닫기">✕</button></div>
   <div id="syOff">
-    <p class="qz-sy-t">폰·패드·PC에 같은 코드를 넣으면 쪽지시험 기록이 함께 맞춰져요.</p>
-    <button class="qz-main" type="button" id="bSyNew">새 코드 만들기</button>
-    <p class="qz-sy-or">다른 기기에서 만든 코드가 있으면</p>
-    <div class="qz-sy-in"><input id="syCode" placeholder="코드 12자리" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" aria-label="연동 코드"><button class="qz-main qsub" type="button" id="bSyGo">연결</button></div>
+    <p class="qz-sy-t">다른 기기에서 쓰던 기록을 이어 쓰려면, 그 기기의 「기기 연동」에 뜬 코드를 넣으세요.</p>
+    <div class="qz-sy-in"><input id="syCode" placeholder="코드 12자리" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" aria-label="연동 코드"><button class="qz-main" type="button" id="bSyGo">연결</button></div>
+    <button class="qz-link qz-sy-alt" type="button" id="bSyFirst">처음 연동하나요? 새 코드 만들기</button>
+  </div>
+  <div id="syLink" class="qz-hide">
+    <p class="qz-sy-t" id="syLinkT">이 코드로 연결할까요? 이 기기 기록과 합쳐져요.</p>
+    <div class="qz-sy-code" id="syLinkCode"></div>
+    <button class="qz-main" type="button" id="bSyLinkGo" style="margin-top:10px">연결</button>
   </div>
   <div id="syOn" class="qz-hide">
-    <p class="qz-sy-t">다른 기기의 쪽지시험에서 「기기 연동」을 누르고 이 코드를 넣으세요.</p>
+    <p class="qz-sy-t" id="syOnT">다른 기기에서는 이 링크를 열거나 코드를 넣으면 연결돼요.</p>
     <div class="qz-sy-code" id="syShow"></div>
-    <button class="qz-main qsub" type="button" id="bSyCp">코드 복사</button>
+    <div class="qz-sy-2"><button class="qz-main" type="button" id="bSyShare">링크 보내기</button><button class="qz-main qsub" type="button" id="bSyCp">코드 복사</button></div>
+    <p class="qz-sy-keep"><b>링크를 나에게 보내기나 메모에 저장해 두세요.</b> 이 기기 기록이 지워져도 그 링크로 다시 받을 수 있어요.</p>
+    <button class="qz-main qz-hide" type="button" id="bSyDone" style="margin-top:12px">저장했어요</button>
     <p class="qz-mini" id="syAt"></p>
     <p class="qz-mini">코드는 이 기록을 여는 열쇠예요. 다른 사람에게 알려 주지 마세요.</p>
     <button class="qz-link qz-sy-off" type="button" id="bSyOff">연동 끊기</button>
@@ -393,20 +403,40 @@ document.addEventListener('keydown', function(e){ if($('sh').classList.contains(
 var QS=new URLSearchParams(location.search), FROM=QS.get('from'), NOTE=(QS.get('s')&&FROM)?encodeURIComponent(QS.get('s'))+'.html#rn-qz-'+encodeURIComponent(FROM):null;
 function backTo(a){ if(!NOTE) return; a.href=NOTE; a.lastChild.textContent='노트'; }
 if(NOTE){ backTo($('bBack1')); backTo($('bBack2')); $('bNote').href=NOTE; $('bNote').classList.remove('qz-hide'); }
-function syView(){ $('syOff').classList.toggle('qz-hide', !!sy); $('syOn').classList.toggle('qz-hide', !sy); $('syErr').classList.add('qz-hide'); if(sy){ $('syShow').textContent=syFmt(sy.code); syAtShow(); } }
+function syShowOnly(id){ ['syOff','syLink','syOn'].forEach(function(x){ $(x).classList.toggle('qz-hide', x!==id); }); $('syErr').classList.add('qz-hide'); }
+var syMust=false;   
+function syView(){ if(sy){ syShowOnly('syOn'); $('syShow').textContent=syFmt(sy.code); syAtShow(); $('bSyDone').classList.toggle('qz-hide', !syMust); $('bSyX').style.visibility=syMust?'hidden':''; } else { syShowOnly('syOff'); $('bSyX').style.visibility=''; } }
 function syErr(m){ var e=$('syErr'); e.textContent=m; e.classList.remove('qz-hide'); }
-$('bSync').onclick=function(){ syView(); $('sy').classList.add('on'); };
-$('bSyX').onclick=function(){ $('sy').classList.remove('on'); }; $('sy').onclick=function(e){ if(e.target===$('sy')) $('sy').classList.remove('on'); };
-$('bSyNew').onclick=function(){ var b=this, c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', a=new Uint32Array(12), k=''; crypto.getRandomValues(a); for(var i=0;i<12;i++) k+=c[a[i]%c.length];
-  b.disabled=true; sy={code:k}; var up={}; Object.keys(rec).forEach(function(id){ up['r/'+id]=syEnc(rec[id]); });
-  syPush(up).then(function(){ sySave(); syView(); info(); }).catch(function(){ sy=null; syErr('연결하지 못했어요. 잠시 뒤 다시 해 주세요.'); }).then(function(){ b.disabled=false; }); };
-$('bSyGo').onclick=function(){ var b=this, k=syNorm($('syCode').value); if(!/^[A-Z2-9]{12}$/.test(k)){ syErr('코드 12자리를 그대로 넣어 주세요.'); return; }
-  b.disabled=true; fetch(SYDB+k+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+function syLinkUrl(){ return location.origin+location.pathname+'#sync='+syFmt(sy.code); }
+function syClose(){ if(syMust) return; $('sy').classList.remove('on'); }
+function syConnect(k, b){ if(b) b.disabled=true;
+  return fetch(SYDB+k+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
     if(!d){ syErr('이 코드를 찾지 못했어요. 다시 확인해 주세요.'); return; }
-    sy={code:k}; sySave(); return syPull().then(function(){ syView(); info(); $('syCode').value=''; }); })
-  .catch(function(){ syErr('연결하지 못했어요. 잠시 뒤 다시 해 주세요.'); }).then(function(){ b.disabled=false; }); };
+    sy={code:k}; sySave(); return syPull().then(function(){ var n=Object.keys(rec).filter(function(x){ return BY[x]; }).length;
+      syView(); $('syOnT').textContent='연결했어요 · 기록 '+n+'문제를 맞췄어요. 다른 기기에서는 이 링크를 열거나 코드를 넣으면 연결돼요.'; info(); $('syCode').value=''; }); })
+  .catch(function(){ syErr('연결하지 못했어요. 잠시 뒤 다시 해 주세요.'); }).then(function(){ if(b) b.disabled=false; }); }
+$('bSync').onclick=function(){ syView(); $('sy').classList.add('on'); };
+$('bSyX').onclick=syClose; $('sy').onclick=function(e){ if(e.target===$('sy')) syClose(); };
+$('bSyFirst').onclick=function(){   
+   var b=this, c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', a=new Uint32Array(12), k=''; crypto.getRandomValues(a); for(var i=0;i<12;i++) k+=c[a[i]%c.length];
+  b.disabled=true; sy={code:k}; var up={}; Object.keys(rec).forEach(function(id){ up['r/'+id]=syEnc(rec[id]); });
+  syPush(up).then(function(){ sySave(); syMust=true; syView(); $('syOnT').textContent='코드를 만들었어요. 다른 기기에서는 이 링크를 열거나 코드를 넣으면 연결돼요.'; info(); })
+    .catch(function(){ sy=null; syErr('연결하지 못했어요. 잠시 뒤 다시 해 주세요.'); }).then(function(){ b.disabled=false; }); };
+$('bSyDone').onclick=function(){ syMust=false; syView(); };
+$('bSyGo').onclick=function(){ var k=syNorm($('syCode').value); if(!/^[A-Z2-9]{12}$/.test(k)){ syErr('코드 12자리를 그대로 넣어 주세요.'); return; } syConnect(k, this); };
+$('bSyLinkGo').onclick=function(){ syConnect(this.dataset.k, this); };
+$('bSyShare').onclick=function(){ var b=this, u=syLinkUrl();
+  if(navigator.share) navigator.share({title:'쪽지시험 기기 연동', text:'쪽지시험 기기 연동 링크', url:u}).catch(function(){});
+  else (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){ b.textContent='링크를 복사했어요'; setTimeout(function(){ b.textContent='링크 보내기'; },1500); }, function(){ syErr('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.'); }); };
 $('bSyCp').onclick=function(){ var b=this, v=syFmt(sy.code); (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(function(){ b.textContent='복사했어요'; setTimeout(function(){ b.textContent='코드 복사'; },1500); }, function(){ syErr('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.'); }); };
-$('bSyOff').onclick=function(){ if(!confirm('연동을 끊을까요? 이 기기 기록은 그대로 남아요.')) return; sy=null; sySave(); syView(); info(); };
+$('bSyOff').onclick=function(){ if(!confirm('연동을 끊을까요? 이 기기 기록은 그대로 남아요.\n다시 연결하려면 같은 코드를 넣으세요(새 코드를 만들면 기록이 따로 맞춰져요).')) return; sy=null; sySave(); syView(); info(); };
+
+(function(){ var m=location.hash.match(/^#sync=([A-Za-z0-9-]{12,16})$/); if(!m) return; var k=syNorm(m[1]);
+  try{ history.replaceState(history.state,'',location.pathname+location.search); }catch(e){}
+  if(!/^[A-Z2-9]{12}$/.test(k)||(sy&&sy.code===k)) return;
+  syShowOnly('syLink'); $('syLinkCode').textContent=syFmt(k); $('bSyLinkGo').dataset.k=k;
+  $('syLinkT').textContent=sy?'지금은 다른 코드로 연동돼 있어요. 이 코드로 바꿀까요? 이 기기 기록과 합쳐져요.':'이 코드로 연결할까요? 이 기기 기록과 합쳐져요.';
+  $('sy').classList.add('on'); })();
 document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') sySync(); });
 load();
 fetch('quiz-data.json?v=ba1fd6f1').then(function(r){ return r.json(); }).then(function(j){ D=j.cards||[];

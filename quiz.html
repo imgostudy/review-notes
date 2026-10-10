@@ -136,6 +136,16 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
 .qz-odd textarea{display:block;width:100%;box-sizing:border-box;min-height:120px;padding:12px 16px;border:0;border-radius:16px;background:var(--q-fill);font:inherit;font-size:16px;line-height:1.5;color:var(--q-label);resize:vertical;}
 .qz-odd textarea:focus{outline:none;box-shadow:0 0 0 2px var(--q-acc);}
 .qz-odd .qz-main{margin-top:12px;}
+
+.qz-sy-t{font-size:15px;line-height:21px;color:var(--q-sec);margin:0 0 4px;}
+.qz-sy-or{font-size:13px;line-height:18px;color:var(--q-sec);margin:22px 0 8px;}
+.qz-sy-in{display:flex;gap:8px;}
+.qz-sy-in input{flex:1;min-width:0;height:50px;box-sizing:border-box;border:0;border-radius:14px;background:var(--q-fill);padding:0 14px;font:inherit;font-size:18px;letter-spacing:.06em;color:var(--q-label);text-transform:uppercase;}
+.qz-sy-in input:focus{outline:none;box-shadow:0 0 0 2px var(--q-acc);}
+.qz-sy-in .qz-main{width:auto;flex:0 0 auto;padding:0 22px;margin:0;}
+.qz-sy-code{margin:14px 0 4px;padding:14px 0;border-radius:14px;background:var(--q-fill);text-align:center;font-size:24px;line-height:30px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums;color:var(--q-label);user-select:all;-webkit-user-select:all;}
+.qz-sy-off{display:block;margin:18px auto 0;color:#FF3B30;font-size:15px;}
+.qz-sy-err{color:#FF3B30;}
 </style>
 <div class="qz-in" id="vSet">
   <a class="qz-back" href="index.html" id="bBack1"><svg viewBox="0 0 10 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 8.5l7 7"/></svg>목차</a>
@@ -146,6 +156,7 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
     <div class="qz-row"><span class="qk">문항 수</span><span class="qz-nv" id="sNv"></span><span class="qz-step"><button type="button" id="sNm" aria-label="줄이기"><svg viewBox="0 0 16 16"><path d="M3.5 8h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><i></i><button type="button" id="sNp" aria-label="늘리기"><svg viewBox="0 0 16 16"><path d="M3.5 8h9M8 3.5v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></span></div>
     <div class="qz-row"><label class="qk" for="sW">틀린 문제만</label><input type="checkbox" class="qz-sw" id="sW" role="switch"></div>
     <div class="qz-row"><label class="qk" for="sWr">써 보기</label><input type="checkbox" class="qz-sw" id="sWr" role="switch"></div>
+    <button class="qz-row" type="button" id="bSync"><span class="qk">기기 연동</span><span class="v" id="sSync">꺼짐</span><svg class="qz-cv" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg></button>
   </div>
   <p class="qz-cap" id="sInfo"></p>
   <button class="qz-main" id="bGo" type="button">시작</button>
@@ -184,6 +195,24 @@ button.qz-row{cursor:pointer;} button.qz-row:active{background:var(--q-fill);}
   <div class="qz-pk-ft"><button class="no" type="button" id="pkNo">취소</button><button class="ok" type="button" id="pkOk">확인</button></div>
 </div></div>
 
+<div class="qz-sheet" id="sy" role="dialog" aria-label="기기 연동"><div class="qz-odd">
+  <div class="qh"><b>기기 연동</b><button class="qz-x" type="button" id="bSyX" aria-label="닫기">✕</button></div>
+  <div id="syOff">
+    <p class="qz-sy-t">폰·패드·PC에 같은 코드를 넣으면 쪽지시험 기록이 함께 맞춰져요.</p>
+    <button class="qz-main" type="button" id="bSyNew">새 코드 만들기</button>
+    <p class="qz-sy-or">다른 기기에서 만든 코드가 있으면</p>
+    <div class="qz-sy-in"><input id="syCode" placeholder="코드 12자리" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" aria-label="연동 코드"><button class="qz-main qsub" type="button" id="bSyGo">연결</button></div>
+  </div>
+  <div id="syOn" class="qz-hide">
+    <p class="qz-sy-t">다른 기기의 쪽지시험에서 「기기 연동」을 누르고 이 코드를 넣으세요.</p>
+    <div class="qz-sy-code" id="syShow"></div>
+    <button class="qz-main qsub" type="button" id="bSyCp">코드 복사</button>
+    <p class="qz-mini" id="syAt"></p>
+    <p class="qz-mini">코드는 이 기록을 여는 열쇠예요. 다른 사람에게 알려 주지 마세요.</p>
+    <button class="qz-link qz-sy-off" type="button" id="bSyOff">연동 끊기</button>
+  </div>
+  <p class="qz-mini qz-sy-err qz-hide" id="syErr"></p>
+</div></div>
 <div class="qz-sheet" id="sh" role="dialog" aria-label="이 문제 이상해요"><div class="qz-odd">
   <div class="qh"><b>이 문제 이상해요</b><button class="qz-x" type="button" id="bShX" aria-label="닫기">✕</button></div>
   <textarea id="shT" placeholder="어디가 이상한지"></textarea>
@@ -201,6 +230,27 @@ var $=function(id){ return document.getElementById(id); };
 var D=[], BY={}, rec={}, run=null, nPick=10, SUBJ=[], TOPS={}, sel={};
 function load(){ try{ rec=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ rec={}; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(rec)); }catch(e){} }
+
+var SYDB='https://rn-feedback-signal-default-rtdb.asia-southeast1.firebasedatabase.app/sync/', SYK=KEY+'_sync', sy=null, syPend={}, syT=0;
+try{ sy=JSON.parse(localStorage.getItem(SYK)||'null'); if(sy&&!/^[A-Z2-9]{12}$/.test(sy.code||'')) sy=null; }catch(e){ sy=null; }
+function sySave(){ try{ if(sy) localStorage.setItem(SYK, JSON.stringify(sy)); else localStorage.removeItem(SYK); }catch(e){} }
+function syEnc(r){ return r.join(','); }
+function syDec(s){ var a=String(s||'').split(',').map(Number); return a.length===4&&a.every(function(x){ return isFinite(x); })?a:null; }
+function syNorm(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function syFmt(c){ return c.slice(0,4)+'-'+c.slice(4,8)+'-'+c.slice(8); }
+function syPush(up){ if(!sy) return Promise.resolve(); up=up||{}; up.at=Date.now(); if(sy.clr) up.clr=sy.clr;
+  return fetch(SYDB+sy.code+'.json',{method:'PATCH',body:JSON.stringify(up)}).then(function(r){ if(!r.ok) throw new Error('올리기 '+r.status); sy.at=Date.now(); sySave(); syAtShow(); }); }
+function syPull(){ if(!sy) return Promise.resolve(false);
+  return fetch(SYDB+sy.code+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('받기 '+r.status); return r.json(); }).then(function(d){
+    d=d||{}; var R=d.r||{}, clr=Math.max(d.clr||0, sy.clr||0), up={}, ch=false;
+    Object.keys(rec).forEach(function(k){ if(rec[k][2]<=clr){ delete rec[k]; ch=true; } });
+    Object.keys(R).forEach(function(k){ var x=syDec(R[k]); if(!x||x[2]<=clr) return; if(!rec[k]||rec[k][2]<x[2]){ rec[k]=x; ch=true; } });
+    Object.keys(rec).forEach(function(k){ var x=R[k]&&syDec(R[k]); if(!x||x[2]<rec[k][2]) up['r/'+k]=syEnc(rec[k]); });
+    sy.clr=clr; if(ch) save(); return syPush(up).then(function(){ return ch; }); }); }
+function syMark(id){ if(!sy) return; syPend[id]=1; clearTimeout(syT); syT=setTimeout(syFlush, 2000); }
+function syFlush(){ if(!sy) return; var up={}; Object.keys(syPend).forEach(function(k){ if(rec[k]) up['r/'+k]=syEnc(rec[k]); }); syPend={}; syPush(up).catch(function(){}); }
+function syAtShow(){ var e=$('syAt'); if(!e||!sy) return; if(!sy.at){ e.textContent=''; return; } var d=new Date(sy.at); e.textContent='마지막으로 맞춘 시각 '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
+function sySync(){ if(!sy) return; syPull().then(function(ch){ if(ch&&!run) info(); }).catch(function(){}); }
 try{ var n0=+localStorage.getItem(KEY+'_n'); if(n0>=5&&n0%5===0) nPick=n0; }catch(e){}
 function esc(s){ return String(s).replace(/[&<>"]/g,function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]; }); }
 function sname(s){ return s.split('.').slice(1).join('.')||s; }
@@ -226,8 +276,9 @@ function info(){ var p=pool(), all=D.filter(inSel), wn=all.filter(function(c){ r
   slSet(p.length);
   $('bGo').disabled=!p.length;
   var tot=Object.keys(rec).filter(function(k){ return BY[k]; }), ok=tot.filter(function(k){ return rec[k][3]===1; }).length;
-  $('sRec').innerHTML = tot.length ? '이 기기 기록 · 푼 문제 '+tot.length+'개 · 마지막에 맞힌 것 '+ok+'개 · <button class="qz-link" type="button" id="bClr">기록 지우기</button>' : '기록은 이 기기에만 남아요';
-  var c=$('bClr'); if(c) c.onclick=function(){ if(confirm('이 기기의 쪽지시험 기록을 지울까요?')){ rec={}; save(); info(); } }; }
+  $('sRec').innerHTML = tot.length ? (sy?'연동 기록':'이 기기 기록')+' · 푼 문제 '+tot.length+'개 · 마지막에 맞힌 것 '+ok+'개 · <button class="qz-link" type="button" id="bClr">기록 지우기</button>' : (sy?'기록이 연동 기기와 함께 맞춰져요':'기록은 이 기기에만 남아요');
+  $('sSync').textContent=sy?'켜짐':'꺼짐';
+  var c=$('bClr'); if(c) c.onclick=function(){ if(confirm(sy?'연동된 모든 기기의 쪽지시험 기록을 지울까요?':'이 기기의 쪽지시험 기록을 지울까요?')){ rec={}; save(); if(sy){ sy.clr=Date.now(); syPush({}).catch(function(){}); } info(); } }; }
 
 var poolN=0;   // nPick = 고른 값(기억) · 화면 값 = 지금 범위에 맞춘 값(nCur) — 범위가 좁아져도 고른 값을 잃지 않는다
 function stepVals(){ var v=[], top=Math.min(poolN,100); for(var i=5;i<top;i+=5) v.push(i); v.push(top); return v; }   // 한 번에 최대 100 · 범위가 100 이하면 끝 = 전부
@@ -309,7 +360,7 @@ function reveal(){ if(!run||$('vQ').classList.contains('qz-hide')||revealed) ret
   var qi=$('qIn'), mine=$('sWr').checked?qi.value.trim():''; qi.blur(); if(mine){ $('qMine').innerHTML='<b>내 답</b>'+esc(mine); $('qMine').classList.remove('qz-hide'); }
   $('qAns').style.visibility=''; $('qCover').classList.add('qz-hide'); $('aShow').classList.add('qz-hide'); $('aRate').classList.remove('qz-hide'); }
 function rate(ok){ if(!run||!revealed) return; var c=run.list[run.i], r=rec[c.id]||[0,0,0,0];
-  r[0]++; if(ok) r[1]++; r[2]=Date.now(); r[3]=ok?1:0; rec[c.id]=r; save(); run.res.push(ok);
+  r[0]++; if(ok) r[1]++; r[2]=Date.now(); r[3]=ok?1:0; rec[c.id]=r; save(); run.res.push(ok); syMark(c.id);
   run.i++; if(run.i<run.list.length) paint(); else result(); }
 $('bShow').onclick=reveal; $('qCard').onclick=function(e){ if(e.target.closest('a,button,textarea')) return; reveal(); };
 $('qIn').addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey && !e.isComposing && e.keyCode!==229){ e.preventDefault(); reveal(); } e.stopPropagation(); });   // 쓰는 동안은 Space·Z·C 단축키를 막는다
@@ -342,13 +393,28 @@ document.addEventListener('keydown', function(e){ if($('sh').classList.contains(
 var QS=new URLSearchParams(location.search), FROM=QS.get('from'), NOTE=(QS.get('s')&&FROM)?encodeURIComponent(QS.get('s'))+'.html#rn-qz-'+encodeURIComponent(FROM):null;
 function backTo(a){ if(!NOTE) return; a.href=NOTE; a.lastChild.textContent='노트'; }
 if(NOTE){ backTo($('bBack1')); backTo($('bBack2')); $('bNote').href=NOTE; $('bNote').classList.remove('qz-hide'); }
+function syView(){ $('syOff').classList.toggle('qz-hide', !!sy); $('syOn').classList.toggle('qz-hide', !sy); $('syErr').classList.add('qz-hide'); if(sy){ $('syShow').textContent=syFmt(sy.code); syAtShow(); } }
+function syErr(m){ var e=$('syErr'); e.textContent=m; e.classList.remove('qz-hide'); }
+$('bSync').onclick=function(){ syView(); $('sy').classList.add('on'); };
+$('bSyX').onclick=function(){ $('sy').classList.remove('on'); }; $('sy').onclick=function(e){ if(e.target===$('sy')) $('sy').classList.remove('on'); };
+$('bSyNew').onclick=function(){ var b=this, c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', a=new Uint32Array(12), k=''; crypto.getRandomValues(a); for(var i=0;i<12;i++) k+=c[a[i]%c.length];
+  b.disabled=true; sy={code:k}; var up={}; Object.keys(rec).forEach(function(id){ up['r/'+id]=syEnc(rec[id]); });
+  syPush(up).then(function(){ sySave(); syView(); info(); }).catch(function(){ sy=null; syErr('연결하지 못했어요. 잠시 뒤 다시 해 주세요.'); }).then(function(){ b.disabled=false; }); };
+$('bSyGo').onclick=function(){ var b=this, k=syNorm($('syCode').value); if(!/^[A-Z2-9]{12}$/.test(k)){ syErr('코드 12자리를 그대로 넣어 주세요.'); return; }
+  b.disabled=true; fetch(SYDB+k+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+    if(!d){ syErr('이 코드를 찾지 못했어요. 다시 확인해 주세요.'); return; }
+    sy={code:k}; sySave(); return syPull().then(function(){ syView(); info(); $('syCode').value=''; }); })
+  .catch(function(){ syErr('연결하지 못했어요. 잠시 뒤 다시 해 주세요.'); }).then(function(){ b.disabled=false; }); };
+$('bSyCp').onclick=function(){ var b=this, v=syFmt(sy.code); (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(function(){ b.textContent='복사했어요'; setTimeout(function(){ b.textContent='코드 복사'; },1500); }, function(){ syErr('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.'); }); };
+$('bSyOff').onclick=function(){ if(!confirm('연동을 끊을까요? 이 기기 기록은 그대로 남아요.')) return; sy=null; sySave(); syView(); info(); };
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') sySync(); });
 load();
 fetch('quiz-data.json?v=ba1fd6f1').then(function(r){ return r.json(); }).then(function(j){ D=j.cards||[];
   D.forEach(function(c){ BY[c.id]=c; if(!TOPS[c.s]){ TOPS[c.s]=[]; SUBJ.push(c.s); }
     var x=TOPS[c.s].filter(function(z){ return z.t===c.t; })[0]; if(!x){ x={t:c.t, n:0, ms:[]}; TOPS[c.s].push(x); } x.n++;
     var y=x.ms.filter(function(z){ return z.m===(c.m||''); })[0]; if(!y){ y={m:c.m||'', n:0}; x.ms.push(y); } y.n++; });
   var s0=QS.get('s'), t0=QS.get('t'); if(s0&&t0&&TOPS[s0]&&TOPS[s0].some(function(x){ return x.t===t0; })) keysOf(s0,t0).forEach(function(k){ sel[k]=1; });
-  info();
+  info(); sySync();   
   
   var c0=QS.get('card'); if(c0&&BY[c0]){ start([BY[c0]], true); $('qName').textContent='제보한 문제'; }
   }).catch(function(){ $('sInfo').textContent='문제를 불러오지 못했어요 — 새로고침해 주세요'; $('bGo').disabled=true; });

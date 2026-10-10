@@ -173,6 +173,7 @@
     });
   })();
   document.querySelectorAll('main.wrap .vchain:not(.conv)').forEach(function(v){
+    if(v.classList.contains('keepv')) return;    
     if(![].some.call(v.querySelectorAll('.ann'), function(x){ return x.textContent.trim(); })) v.classList.add('hz');
   });
    

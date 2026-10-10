@@ -780,6 +780,16 @@ tr:has(>td>.ms)>td{vertical-align:middle;height:2.4em;}
   main .converge>.stack,main .converge>.bracket{flex:1 1 auto;min-width:7.5em;}
 }
 
+:root.v2 .vchain.arws>.arw{display:block;}
+:root.v2 .row.shr>.desc:first-child{flex:0 1 auto;min-width:0;}
+@media (min-width:561px){ .pnw{white-space:nowrap;} }
+@media (max-width:560px){
+  main .converge.pfold{flex-direction:column;align-items:flex-start !important;gap:4px;}
+  main .converge.pfold svg,main .converge.pfold .bracew{display:none;}   
+  main .converge.pfold>.link,main .converge.pfold>.stack,main .converge.pfold>.bracket,main .converge.pfold>:last-child{max-width:none !important;min-width:0 !important;flex:none !important;}
+  :root.v2 .cols.pfold,:root.v2 .cols.fit.pfold{grid-template-columns:minmax(0,1fr) !important;row-gap:.7em;}
+}
+
 /* 배포본: 라이트 = 순백(페이퍼 없음) */
 :root[data-theme="white"],:root[data-theme="paper"]{--bg:#FFFFFF; --card:#FFFFFF; --fill:#F2F2F7; --label:#1D1D1F; --sec:#6E6E73; --ter:#8E8E93; --sep:#E3E3E8; --glass:rgba(255,255,255,.78); --shadow:0 0 0 .5px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.04); --gshadow:0 0 0 .5px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.08); --acc:#007AFF; color-scheme:light;}
 @media (prefers-color-scheme:light){:root:not([data-theme]){--bg:#FFFFFF; --card:#FFFFFF; --fill:#F2F2F7; --label:#1D1D1F; --sec:#6E6E73; --ter:#8E8E93; --sep:#E3E3E8; --glass:rgba(255,255,255,.78); --shadow:0 0 0 .5px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.04); --gshadow:0 0 0 .5px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.08); --acc:#007AFF; color-scheme:light;}}

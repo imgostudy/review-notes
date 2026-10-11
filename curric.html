@@ -16,7 +16,7 @@ body{margin:0;background:var(--bg);color:var(--label);}
 .ct-seg{display:inline-flex;background:var(--fill);border-radius:10px;padding:2px;}
 .ct-seg button{font:inherit;font-size:15px;font-weight:500;border:0;background:transparent;color:var(--label);padding:0 16px;min-height:32px;border-radius:8px;cursor:pointer;}
 .ct-seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600;}
-.ct-chips{flex:1 0 100%;display:flex;flex-wrap:wrap;gap:6px;}.ct-chips[hidden]{display:none;}
+.ct-chips{flex:1 0 100%;display:flex;flex-wrap:wrap;gap:6px;}.ct-chips+.ct-chips{margin-top:-2px;}.ct-chips[hidden]{display:none;}
 .ct-chips button{font:inherit;font-size:13px;font-weight:500;border:0;background:var(--fill);color:var(--label);padding:0 13px;min-height:32px;border-radius:999px;cursor:pointer;}
 .ct-chips button.on{background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--acc);font-weight:600;}
 .ct-chips button[hidden]{display:none;}
@@ -66,13 +66,12 @@ html[data-theme="dark"] .rn-tyok .rn-in{color:#62CC88!important;}html[data-theme
   <a class="sy-back" href="index.html"><svg viewBox="0 0 10 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 8.5l7 7"/></svg>목차</a>
   <h1>내용 체계표</h1>
   <div class="ct-bar">
-    <div class="ct-seg" role="tablist"><button data-sub="music" class="on">음악</button><button data-sub="art">미술</button><button data-sub="pe">체육</button></div>
-    <div class="ct-chips" id="ctChips" hidden></div>
+    <div class="ct-seg" role="tablist" id="ctSubs"></div>
+    <div class="ct-chips" id="ctG" hidden></div>
+    <div class="ct-chips" id="ctC" hidden></div>
   </div>
   <div class="ct-mkw" id="ctMk"></div>
-  <section id="bookmusic"></section>
-  <section id="bookart" hidden></section>
-  <section id="bookpe" hidden></section>
+  <div id="ctBooks"></div>
 </div>
 <script>
 const MUSIC = {
@@ -159,6 +158,11 @@ const PE_TL = {
     ["(2) 평가 방법", [["(가)","평가 내용 선정",[]],["(나)","성취기준 및 성취수준 선정",[]],["(다)","평가 방법 및 도구의 선정",[]],["(라)","평가 결과의 활용",[]]]]
   ]
 };
+
+const EXTRA = {
+};
+
+const CAT_LABEL = { '세부': '세부 영역', '교평': '교수·평가' };
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const it = (x, g, cat) => `<div class="ct-it c" data-g="${g}" data-cat="${cat}">${esc(x)}</div>`;
 
@@ -209,29 +213,27 @@ function peTL(){
   return h + '</div>';
 }
 function buildBook(){
-  let m = '';
-  for (const [area, cats] of Object.entries(MUSIC))
-    m += bookTable(area, Object.entries(cats).map(([cat, rows]) => [cat, rows.map(r => r[0]), rows.map(r => r[1])]));
-  document.getElementById('bookmusic').innerHTML = m;
-  let a = '';
-  for (const [area, d] of Object.entries(ART))
-    a += bookTable(area, [["지식·이해", d.rows.map(r => r[0]), d.rows.map(r => r[2])], ["과정·기능", d.rows.map(r => r[1]), d.rows.map(r => r[3])], ["가치·태도", d.val.map(r => r[0]), d.val.map(r => r[1])]]);
-  document.getElementById('bookart').innerHTML = a;
-  document.getElementById('bookpe').innerHTML = peVal() + peEx('34') + peEx('56') + peTL();
+  const music = Object.entries(MUSIC).map(([area, cats]) => bookTable(area, Object.entries(cats).map(([cat, rows]) => [cat, rows.map(r => r[0]), rows.map(r => r[1])]))).join('');
+  const art = Object.entries(ART).map(([area, d]) => bookTable(area, [["지식·이해", d.rows.map(r => r[0]), d.rows.map(r => r[2])], ["과정·기능", d.rows.map(r => r[1]), d.rows.map(r => r[3])], ["가치·태도", d.val.map(r => r[0]), d.val.map(r => r[1])]])).join('');
+  const subs = [['music', '음악', music], ['art', '미술', art], ['pe', '체육', peVal() + peEx('34') + peEx('56') + peTL()]];
+  for (const [name, d] of Object.entries(EXTRA))
+    subs.push([d.id, name, Object.entries(d.areas).map(([area, cats]) => bookTable(area, Object.entries(cats).map(([cat, [a, b]]) => [cat, a || [], b || []]))).join('')]);
+  document.getElementById('ctSubs').innerHTML = subs.map(([id, name]) => `<button data-sub="${id}">${esc(name)}</button>`).join('');
+  document.getElementById('ctBooks').innerHTML = subs.map(([id, , h]) => `<section id="book${id}" hidden>${h}</section>`).join('');
+  window.CT_SUBS = subs.map(x => x[0]);
 }
 buildBook();
 (function(){
-  var KEY='rn_ct_mask', OKEY='rn_ct_mask_on', TKEY='rn_mask_type', sub='music';
-  var ITEMS=[['all','전부',''],['g34','3~4',''],['g56','5~6',''],['proc','과정·기능','ma'],['ex','예시','pe'],['tl','교수·평가','pe']];
+  var GKEY='rn_ct_g', CKEY='rn_ct_c', OKEY='rn_ct_mask_on', TKEY='rn_mask_type', sub=CT_SUBS[0];
   var BOX='<svg viewBox="0 0 20 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="1.5" y="3" width="17" height="10" rx="2.5" stroke-dasharray="3 2.4"/></svg>';
   var BOXF='<svg viewBox="0 0 20 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1.5" y="3" width="17" height="10" rx="2.5" fill="currentColor" fill-opacity=".22"/></svg>';
   var CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
   [].forEach.call(document.querySelectorAll('.c'), function(c){ var s=document.createElement('span'); s.className='rn-in'; while(c.firstChild) s.appendChild(c.firstChild); c.appendChild(s); });
-  var on=false, mode='all'; try{ on=localStorage.getItem(OKEY)==='1'; mode=localStorage.getItem(KEY)||'all'; }catch(e){}
-  function fits(m){ var x=ITEMS.filter(function(i){ return i[0]===m; })[0]; return !!x && (!x[2] || (x[2]==='pe')===(sub==='pe')); }
-  if(!fits(mode)) mode='all';
-  function hides(el){ var g=el.dataset.g, cat=el.dataset.cat; if(!on) return false;
-    return mode==='all' || (mode==='g34'&&g==='34') || (mode==='g56'&&g==='56') || (mode==='proc'&&cat==='과정·기능') || (mode==='ex'&&cat==='예시') || (mode==='tl'&&g==='tl'); }
+  
+  var on=false, gr='all', ca='all'; try{ on=localStorage.getItem(OKEY)==='1'; gr=localStorage.getItem(GKEY)||'all'; ca=localStorage.getItem(CKEY)||'all'; }catch(e){}
+  if(['all','34','56'].indexOf(gr)<0) gr='all';
+  function cats(){ var o=[]; [].forEach.call(document.querySelectorAll('#book'+sub+' .c'), function(e){ if(o.indexOf(e.dataset.cat)<0) o.push(e.dataset.cat); }); return o; }
+  function hides(el){ return on && (gr==='all' || el.dataset.g===gr) && (ca==='all' || el.dataset.cat===ca); }
   function apply(){ [].forEach.call(document.querySelectorAll('.c'), function(el){ el.classList.toggle('cm-h', hides(el)); el.classList.remove('rn-show','rn-tyok','rn-tyno'); }); tyClose(); }
   function typing(){ var v='0'; try{ v=localStorage.getItem(TKEY)||'0'; }catch(e){} return v==='1'; }
   var ty=null, norm=function(x){ return (x||'').toLowerCase().replace(/[\s·ㆍ・,.:;!?'"“”‘’「」『』()（）\[\]{}<>〈〉《》\-–—~/]/g,''); };
@@ -266,13 +268,15 @@ buildBook();
     '<button type="button" class="tg" role="menuitemcheckbox" data-t="1"><span class="ck">'+CHECK+'</span><span class="t"><b>타이핑으로 열기</b></span></button>';
   document.body.appendChild(mm);
   var b=document.createElement('button'); b.type='button'; b.className='rn-mk'; b.setAttribute('aria-haspopup','menu'); b.setAttribute('aria-expanded','false'); document.getElementById('ctMk').appendChild(b);
-  var chips=document.getElementById('ctChips');
-  chips.innerHTML=ITEMS.map(function(x){ return '<button type="button" data-m="'+x[0]+'">'+x[1]+'</button>'; }).join('');
-  function paint(){ b.innerHTML=(on?BOXF:BOX)+'<span>마스킹</span>'; b.classList.toggle('on', on); chips.hidden=!on;
+  var cg=document.getElementById('ctG'), cc=document.getElementById('ctC');
+  function chips(){ cg.innerHTML=[['all','전체'],['34','3~4'],['56','5~6']].map(function(x){ return '<button type="button" data-gr="'+x[0]+'">'+x[1]+'</button>'; }).join('');
+    cc.innerHTML=[['all','전체']].concat(cats().map(function(k){ return [k, CAT_LABEL[k]||k]; })).map(function(x){ return '<button type="button" data-ca="'+x[0]+'">'+x[1]+'</button>'; }).join(''); }
+  function paint(){ b.innerHTML=(on?BOXF:BOX)+'<span>마스킹</span>'; b.classList.toggle('on', on); cg.hidden=cc.hidden=!on;
     [].forEach.call(mm.querySelectorAll('button[data-o]'), function(x){ var sel=(x.dataset.o==='1')===on; x.classList.toggle('sel', sel); x.setAttribute('aria-checked', sel); });
     var tb=mm.querySelector('button[data-t]'); tb.classList.toggle('sel', typing()); tb.setAttribute('aria-checked', typing());
-    [].forEach.call(chips.querySelectorAll('button[data-m]'), function(x){ x.hidden=!fits(x.dataset.m); x.classList.toggle('on', x.dataset.m===mode); x.setAttribute('aria-pressed', x.dataset.m===mode); }); }
-  function save(){ try{ localStorage.setItem(OKEY, on?'1':'0'); localStorage.setItem(KEY, mode); }catch(e){} }
+    [].forEach.call(cg.querySelectorAll('button'), function(x){ x.classList.toggle('on', x.dataset.gr===gr); x.setAttribute('aria-pressed', x.dataset.gr===gr); });
+    [].forEach.call(cc.querySelectorAll('button'), function(x){ x.classList.toggle('on', x.dataset.ca===ca); x.setAttribute('aria-pressed', x.dataset.ca===ca); }); }
+  function save(){ try{ localStorage.setItem(OKEY, on?'1':'0'); localStorage.setItem(GKEY, gr); localStorage.setItem(CKEY, ca); }catch(e){} }
   var opened=false;
   function close(){ mm.classList.remove('on'); b.setAttribute('aria-expanded','false'); opened=false; }
   function open(){ var r=b.getBoundingClientRect(); mm.classList.add('on'); mm.style.top=(r.bottom+6)+'px'; mm.style.left=Math.max(8, Math.min(innerWidth-mm.offsetWidth-8, r.right-mm.offsetWidth))+'px'; b.setAttribute('aria-expanded','true'); opened=true; }
@@ -283,16 +287,17 @@ buildBook();
     var to=x.dataset.o==='1'&&!on;   
     if(to!==on){ on=to; save(); apply(); paint(); }
     close(); });
-  chips.addEventListener('click', function(ev){ var x=ev.target.closest('button[data-m]'); if(!x || x.dataset.m===mode) return; mode=x.dataset.m; save(); apply(); paint(); });
+  cg.addEventListener('click', function(ev){ var x=ev.target.closest('button[data-gr]'); if(!x) return; gr=x.dataset.gr; save(); apply(); paint(); });
+  cc.addEventListener('click', function(ev){ var x=ev.target.closest('button[data-ca]'); if(!x) return; ca=x.dataset.ca; save(); apply(); paint(); });
   document.addEventListener('click', function(ev){ if(opened && !mm.contains(ev.target) && !b.contains(ev.target)) close(); }, true);
   document.addEventListener('keydown', function(ev){ if(ev.key==='Escape' && opened) close(); });
   addEventListener('scroll', function(){ if(opened) close(); }, {passive:true}); addEventListener('resize', close);
-  function show(s){ sub=s; ['music','art','pe'].forEach(function(k){ document.getElementById('book'+k).hidden=(k!==s); });
+  function show(s){ sub=s; CT_SUBS.forEach(function(k){ document.getElementById('book'+k).hidden=(k!==s); });
     [].forEach.call(document.querySelectorAll('[data-sub]'), function(x){ x.classList.toggle('on', x.dataset.sub===s); });
-    if(!fits(mode)){ mode='all'; save(); } apply(); paint();
+    chips(); if(ca!=='all' && cats().indexOf(ca)<0){ ca='all'; save(); } apply(); paint();
     try{ history.replaceState(null,'','#'+s); }catch(e){} }
   [].forEach.call(document.querySelectorAll('[data-sub]'), function(x){ x.onclick=function(){ show(x.dataset.sub); }; });
-  function fromHash(){ var h=location.hash.slice(1); show(['music','art','pe'].indexOf(h)>=0?h:'music'); }
+  function fromHash(){ var h=location.hash.slice(1); show(CT_SUBS.indexOf(h)>=0?h:CT_SUBS[0]); }
   addEventListener('hashchange', fromHash); fromHash();
 })();
 </script>

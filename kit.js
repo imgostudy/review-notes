@@ -1197,5 +1197,25 @@ document.querySelectorAll('.mkf svg,.mkd svg,.converge>svg,.fork svg,.fig svg').
   var t; window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(fitTicks,150);});
 })();
 
+(function(){
+  function rows(){ return Array.prototype.filter.call(document.querySelectorAll('main div'), function(d){
+    var f=d.firstElementChild, l=d.lastElementChild;
+    return !d.classList.contains('row') && f && f.classList.contains('term') && l && l.classList.contains('desc'); }); }
+  function hang(){
+    var rs=rows();
+    rs.forEach(function(d){ d.style.paddingLeft=''; d.style.textIndent=''; d.classList.remove('hng'); });
+    rs.forEach(function(d){
+      var dr=d.lastElementChild.getClientRects(); if(!dr.length) return;
+      var rr=d.getBoundingClientRect(); if(rr.height < dr[0].height*1.6) return;   
+      var base=parseFloat(getComputedStyle(d).paddingLeft)||0, pre=dr[0].left-(rr.left+base);
+      if(pre<=0 || pre>(rr.width-base)*0.45) return;
+      d.style.paddingLeft=(base+pre)+'px'; d.style.textIndent=(-pre)+'px'; d.classList.add('hng');
+    });
+  }
+  window.addEventListener('load',function(){ setTimeout(hang,50); });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(hang,80); });
+  var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(hang,250); });
+})();
+
 /* 인쇄 = 늘 흰 바탕(다크·페이퍼여도) — 끝나면 원래대로 */
 (function(){var r=document.documentElement,k=null;addEventListener('beforeprint',function(){k=r.getAttribute('data-theme');r.dataset.theme='white';});addEventListener('afterprint',function(){if(k)r.dataset.theme=k;else r.removeAttribute('data-theme');});})();

@@ -604,6 +604,7 @@
       }
 
       var noSplit=function(c){
+        if(c.querySelector('.nocol')) return true;    
         if((c._bh||0) < Math.min(innerHeight,820)/3) return true;
         if(c.querySelector('.grp.ingrp')) return false;    
         return hasChain(c);

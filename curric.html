@@ -200,7 +200,7 @@ function bookTable(area, cats){
   let h = `<h2>${esc(area)}</h2><div class="card"><table><tr><th style="width:88px">범주</th><th>3~4학년군</th><th>5~6학년군</th></tr>`;
   for (const [cat, list34, list56, dc] of cats){
     const li = (xs, g) => xs.filter(x => x != null).map(x => it(x, g, dc || cat)).join('');
-    h += `<tr><td class="ct-k">${cat}</td><td>${li(list34,'34')}</td><td>${li(list56,'56')}</td></tr>`;
+    h += `<tr><td class="ct-k">${dc ? it(cat, 'any', '범주') : cat}</td><td>${li(list34,'34')}</td><td>${li(list56,'56')}</td></tr>`;
   }
   return h + '</table></div>';
 }

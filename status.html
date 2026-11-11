@@ -87,8 +87,8 @@ body{margin:0;background:var(--bg);color:var(--label);}
       GOI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></svg>';
   function rowHTML(x){
     var head='<div class="fs-w"><span class="fs-t">'+e0(x.d)+'</span><span class="fs-s">'+e0(x.s)+(x.dn?e0(x.dn):'')+'</span></div><span class="fs-chip fs-'+e0(x.c)+'">'+e0(x.l)+'</span>';
-    if(!x.g && !x.a) return '<div class="fs-row" data-k="'+e0(x.k)+'"><div class="fs-sum">'+head+'<span class="fs-cv"></span></div></div>';
-    return '<details class="fs-row'+(x.m?' fs-only-mine':'')+'" data-k="'+e0(x.k)+'"'+(x.a?' data-a="'+e0(x.a)+'"':'')+'><summary>'+head+CVI+'</summary><div class="fs-x"><div>'
+    if(!x.g && !x.e) return '<div class="fs-row" data-k="'+e0(x.k)+'"><div class="fs-sum">'+head+'<span class="fs-cv"></span></div></div>';
+    return '<details class="fs-row'+(x.m?' fs-only-mine':'')+'" data-k="'+e0(x.k)+'"'+(x.e?' data-e="'+e0(x.e)+'"':'')+'><summary>'+head+CVI+'</summary><div class="fs-x"><div>'
       +(x.g?'<p class="fs-g">'+e0(x.g)+'</p>':'')+(x.w?'<p class="fs-g fs-why">보류 사유 · '+e0(x.w)+'</p>':'')+(x.h?'<p class="fs-g fs-why">'+e0(x.h)+'</p>':'')+'</div>'
       +(x.go?'<a class="fs-go" href="'+e0(x.go)+'" aria-label="'+e0(x.gl)+'" title="'+e0(x.gl)+'">'+GOI+'</a>':'')+'</div></details>'; }
   fetch('fb-recent.json',{cache:'no-cache'}).then(function(r){ return r.json(); }).then(function(D){
@@ -103,9 +103,18 @@ body{margin:0;background:var(--bg);color:var(--label);}
   var key=function(r){ var k=r.dataset.k.split('|'); return {s:k[0],t:new Date(k[1]).getTime()}; };
   var have=[].map.call(L.querySelectorAll('.fs-row[data-k]'),key);
   var only=[].slice.call(L.querySelectorAll('.fs-only-mine')); only.forEach(function(r){ r.remove(); });   
-  function ans(c){ var a=c.getAttribute('data-a'); if(!a) return; c.open=true; var t=''; try{ t=decodeURIComponent(escape(atob(a))); }catch(e){ return; }   
-    var p=document.createElement('p'); p.className='fs-g fs-ans'; p.innerHTML='<b>답장</b>'+t.split('\n').filter(function(x){ return x.trim(); }).map(function(x){ return '<span>'+esc(x)+'</span>'; }).join('');
-    var box=c.querySelector('.fs-x>div'); if(box) box.appendChild(p); }
+  
+  var RN_REPLY_ITER=600000, DEC={};
+  function dec(e,id){ var k=e+'|'+id; if(DEC[k]) return DEC[k];
+    return DEC[k]=(function(){ try{ var b=Uint8Array.from(atob(e),function(ch){ return ch.charCodeAt(0); }), S=crypto.subtle;
+      return S.importKey('raw', new TextEncoder().encode(id), 'PBKDF2', false, ['deriveKey'])
+        .then(function(km){ return S.deriveKey({name:'PBKDF2', salt:b.slice(0,16), iterations:RN_REPLY_ITER, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['decrypt']); })
+        .then(function(key){ return S.decrypt({name:'AES-GCM', iv:b.slice(16,28)}, key, b.slice(28)); })
+        .then(function(buf){ return new TextDecoder().decode(buf); }).catch(function(){ return null; }); }catch(err){ return Promise.resolve(null); } })(); }
+  function ans(c){ var e=c.getAttribute('data-e'), id=null; if(!e) return; try{ id=localStorage.getItem('rn-fb-id'); }catch(err){} if(!id) return;
+    dec(e,id).then(function(t){ if(t==null || c.querySelector('p.fs-ans')) return; c.open=true;
+      var p=document.createElement('p'); p.className='fs-g fs-ans'; p.innerHTML='<b>답장</b>'+t.split('\n').filter(function(x){ return x.trim(); }).map(function(x){ return '<span>'+esc(x)+'</span>'; }).join('');
+      var box=c.querySelector('.fs-x>div'); if(box) box.appendChild(p); }); }
   var thx=[]; var gone=document.querySelector('.fs-gone'); if(gone) (gone.dataset.thx||'').split(';').filter(Boolean).forEach(function(x){ var k=x.split('|'); thx.push({s:k[0],t:new Date(k[1]).getTime()}); });   
   if(gone) (gone.dataset.ks||'').split(';').filter(Boolean).forEach(function(x){ var k=x.split('|'); have.push({s:k[0],t:new Date(k[1]).getTime()}); });   
   try{ var myId=localStorage.getItem('rn-fb-id'), fi=document.querySelector('.fs-id'); if(myId&&fi){ fi.textContent='#'+myId; fi.hidden=false; } }catch(e){}   

@@ -67,8 +67,8 @@
     [].forEach.call(seg.querySelectorAll('button'), function(x){ x.onmousedown=function(e){ e.preventDefault(); }; x.onclick=function(){ here=x.dataset.s==='1';
       [].forEach.call(seg.querySelectorAll('button'), function(y){ y.classList.toggle('on', y===x); }); run(); inp.focus(); }; }); }
 
-  var pf=null, pfP=null;
-  function load(){ if(!pfP) pfP=import('./pagefind/pagefind.js').then(function(m){ pf=m; return m.init?m.init():null; }).then(function(){ return pf; }); return pfP; }
+  var pf=null, pfP=null, pfN=0;   
+  function load(){ if(!pfP) pfP=import('./pagefind/pagefind.js'+(pfN?'?r='+pfN:'')).then(function(m){ pf=m; return m.init?m.init():null; }).then(function(){ return pf; }, function(e){ pfP=null; pfN++; throw e; }); return pfP; }
   function isOn(){ return sx.classList.contains('on') || dd.classList.contains('on'); }
   function shown(el){ return !!(el && el.offsetParent); }
   function place(){ if(!dd.classList.contains('on')) return; var r=inp.parentNode.getBoundingClientRect(), w=Math.max(r.width, Math.min(480, innerWidth-r.left-16));
@@ -162,12 +162,13 @@
     if(f!==FILE) return;
     e.preventDefault(); close(); if(fields.indexOf(inp)>=0) inp.blur();
     if(!(window.rnJump&&window.rnJump(id))){   
-      if(decodeURIComponent(location.hash.slice(1))===id) history.replaceState(null,'',location.pathname+location.search);
+      var hh=''; try{ hh=decodeURIComponent(location.hash.slice(1)); }catch(er){}
+      if(hh===id) history.replaceState(null,'',location.pathname+location.search);
       location.hash=encodeURIComponent(id).replace(/%2F/g,'/'); }
     setTimeout(function(){ var el=document.getElementById(id); if(el) el.scrollIntoView({block:'start'}); flash(id); }, 60);
   });
   try{ var hid=sessionStorage.getItem('rn_sx_hit'); if(hid){ sessionStorage.removeItem('rn_sx_hit'); if(decodeURIComponent(location.hash.slice(1))===hid) setTimeout(function(){ flash(hid); }, 400); } }catch(er){}
 
   
-  fetch('pagefind/pagefind-entry.json', {method:'HEAD'}).then(function(r){ if(!r.ok) throw 0; }).catch(function(){ openers.forEach(function(o){ o.style.display='none'; }); });
+  fetch('pagefind/pagefind-entry.json', {method:'HEAD'}).then(function(r){ if(r.status===404) openers.forEach(function(o){ o.style.display='none'; }); }).catch(function(){});   
 })();

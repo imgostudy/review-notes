@@ -19,4 +19,6 @@
   b.onclick=function(){ var v=dark()?'white':'dark'; try{ localStorage.setItem('rn_theme',v); }catch(e){} r.dataset.theme=v; paint(); };
   if(mq&&mq.addEventListener) mq.addEventListener('change', paint);
   get(); paint(); document.body.appendChild(b);
+  var pk=null; addEventListener('beforeprint', function(){ pk=r.getAttribute('data-theme'); r.dataset.theme='white'; });
+  addEventListener('afterprint', function(){ if(pk) r.dataset.theme=pk; else r.removeAttribute('data-theme'); });
 })();

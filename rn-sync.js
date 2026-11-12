@@ -30,10 +30,14 @@
   function paintRow(){ var v=$('rnSyncV'); if(v) v.textContent=sy?'켜짐':'꺼짐'; }
   function paintAt(){ var e=$('rnsAt'); if(!e||!sy||!sy.at) return; var d=new Date(sy.at); e.innerHTML='<i></i>'+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
   function push(up){ if(!sy) return Promise.resolve(); up=up||{}; up.at=Date.now(); if(sy.clr) up.clr=sy.clr;
-    return fetch(DB+sy.code+'.json',{method:'PATCH',body:JSON.stringify(up)}).then(function(r){ if(!r.ok) throw new Error('push '+r.status); sy.at=Date.now(); sySave(); paintAt(); }); }
-  function pull(){ if(!sy) return Promise.resolve(false);
+    return fetch(DB+sy.code+'.json',{method:'PATCH',body:JSON.stringify(up)}).then(function(r){ if(!r.ok) throw new Error('push '+r.status); if(!sy) return; sy.at=Date.now(); sySave(); paintAt(); }); }
+  
+  function pull(join){ if(!sy) return Promise.resolve(false);
     return fetch(DB+sy.code+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('pull '+r.status); return r.json(); }).then(function(d){
-      d=d||{}; var R=d.r||{}, clr=Math.max(d.clr||0, sy.clr||0), up={}, ch=false, rec=getRec();
+      d=d||{}; var now=Date.now(), dc=+d.clr||0, mc=+sy.clr||0;
+      if(dc===sy.fclr) dc=0; else if(dc>now){ sy.fclr=dc; dc=join?0:now; }
+      if(mc>now) mc=now;
+      var R=d.r||{}, clr=Math.max(dc, mc), up={}, ch=false, rec=getRec();
       Object.keys(rec).forEach(function(k){ if(!rec[k]||rec[k][2]<=clr){ delete rec[k]; ch=true; } });
       Object.keys(R).forEach(function(k){ var x=dec(R[k]); if(!x||x[2]<=clr) return; if(!rec[k]||rec[k][2]<x[2]){ rec[k]=x; ch=true; } });
       Object.keys(rec).forEach(function(k){ var x=R[k]&&dec(R[k]); if(!x||x[2]<rec[k][2]) up['r/'+k]=enc(rec[k]); });
@@ -43,7 +47,7 @@
   function mark(id){ if(!sy) return; pend[id]=1; clearTimeout(pt); pt=setTimeout(function(){ var rec=getRec(), up={}; Object.keys(pend).forEach(function(k){ if(rec[k]) up['r/'+k]=enc(rec[k]); }); pend={}; push(up).catch(function(){}); }, 2000); }
   function clear(){ putRec({}); if(sy){ sy.clr=Date.now(); sySave(); push({}).catch(function(){}); } }
   function sync(){ if(sy) pull().catch(function(){}); }
-  window.RNSync={ on:function(){ return !!sy; }, fbGone:function(t){ var g=lsJ('rn-fb-gone',[]); if(g.indexOf(t)<0){ g.push(t); lsP('rn-fb-gone', g); } if(sy) push({['f/'+t]:''}).catch(function(){}); }, mark:mark, clear:clear, pull:function(){ return sy?pull().catch(function(){ return false; }):Promise.resolve(false); }, onChange:function(f){ cbs.push(f); } };
+  window.RNSync={ on:function(){ return !!sy; }, fbGone:function(t){ var g=lsJ('rn-fb-gone',[]); if(g.indexOf(t)<0){ g.push(t); lsP('rn-fb-gone', g); } if(sy) push({['f/'+t]:''}).catch(function(){}); }, mark:mark, drop:function(id){ delete pend[id]; if(sy) push({['r/'+id]:null}).catch(function(){}); }, clear:clear, pull:function(){ return sy?pull().catch(function(){ return false; }):Promise.resolve(false); }, onChange:function(f){ cbs.push(f); } };
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') sync(); });
   paintRow();
 
@@ -71,7 +75,7 @@
     '<div id="rnsLink" class="rns-h"><p class="rns-t" id="rnsLinkT">이 코드로 연결</p><div class="rns-code" id="rnsLinkCode"></div><button class="rns-b" type="button" id="rnsLinkGo" style="margin-top:10px">연결</button></div>'+
     '<div id="rnsOn" class="rns-h"><p class="rns-t" id="rnsOnT"></p><div class="rns-code" id="rnsShow"></div>'+
       '<div class="rns-2"><button class="rns-b" type="button" id="rnsShare">링크 보내기</button><button class="rns-b rns-sub" type="button" id="rnsCp">코드 복사</button></div>'+
-      '<p class="rns-keep rns-h" id="rnsKeep"><b>링크 저장해 두기</b> · 기록이 지워져도 다시 받을 수 있음</p>'+
+      '<p class="rns-keep rns-h" id="rnsKeep"><b>링크 저장해 두기</b> · 푼 기록은 다시 받을 수 있음 · 복습 간격은 새로 시작</p>'+
       '<button class="rns-b rns-h" type="button" id="rnsDone" style="margin-top:12px">저장함</button>'+
       '<p class="rns-st" id="rnsAt"></p></div>'+
     '<p class="rns-err rns-h" id="rnsErr"></p></div>'+
@@ -85,7 +89,8 @@
   function connect(k, b){ if(b) b.disabled=true;
     return fetch(DB+k+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
       if(!d){ err('이 코드를 찾지 못함 — 다시 확인'); return; }
-      sy={code:k}; sySave(); return pull().then(function(){ var n=Object.keys(getRec()).length; view(); $('rnsOnT').textContent='연결됨 · '+n+'문제 맞춤'; $('rnsCode').value=''; paintRow(); }); })
+      var was=sy; sy={code:k};
+      return pull(true).then(function(){ sySave(); var n=Object.keys(getRec()).length; view(); $('rnsOnT').textContent='연결됨 · '+n+'문제 맞춤'; $('rnsCode').value=''; paintRow(); }, function(e){ sy=was; throw e; }); })
     .catch(function(){ err('연결하지 못함 — 잠시 뒤 다시'); }).then(function(){ if(b) b.disabled=false; }); }
   $('rnsGo').onclick=function(){ var k=norm($('rnsCode').value); if(!/^[A-Z2-9]{12}$/.test(k)){ err('코드 12자리를 그대로 입력'); return; } connect(k, this); };
   $('rnsCode').addEventListener('keydown', function(e){ if(e.key==='Enter'&&!e.isComposing) $('rnsGo').click(); });

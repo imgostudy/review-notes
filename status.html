@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>처리 현황 · 초등 임용 정리 노트</title><script data-goatcounter="https://imgostudy.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script><script>(function(){try{var L=localStorage,d=new Date(),f=function(x){return x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate();},k=f(d);if(L.getItem('rn_v_day')===k)return;var nw=!L.getItem('rn_v_seen'),pv=(L.getItem('rn_v_day')||'').split('-'),gp=8;if(pv.length===3){gp=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(+pv[0],pv[1]-1,+pv[2]))/864e5);if(!(gp>=1))gp=8;if(gp>8)gp=8;}var n=0;(function go(){var g=window.goatcounter;if(g&&g.count){var e=function(p){g.count({path:p,title:p,event:true});};e('visit/day');if(nw)e('visit/new');e('visit/gap/'+gp);L.setItem('rn_v_day',k);L.setItem('rn_v_seen','1');return;}if(++n<40)setTimeout(go,250);})();}catch(e){}})();</script><link rel="icon" href="icon.svg" type="image/svg+xml"><meta name="description" content="보낸 피드백이 반영됐는지 제보 시각으로 확인"><meta property="og:type" content="website"><meta property="og:site_name" content="초등 임용 정리 노트"><meta property="og:title" content="처리 현황 · 초등 임용 정리 노트"><meta property="og:description" content="보낸 피드백이 반영됐는지 제보 시각으로 확인"><meta property="og:url" content="https://imgostudy.github.io/review-notes/status.html">
+<title>처리 현황 · 초등 임용 정리 노트</title><script data-goatcounter="https://imgostudy.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script><script>(function(){try{var L=localStorage,d=new Date(),f=function(x){return x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate();},k=f(d);if(L.getItem('rn_v_day')===k)return;var nw=!L.getItem('rn_v_seen'),pv=(L.getItem('rn_v_day')||'').split('-'),gp=8;if(pv.length===3){gp=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(+pv[0],pv[1]-1,+pv[2]))/864e5);if(!(gp>=1))gp=8;if(gp>8)gp=8;}var n=0;(function go(){var g=window.goatcounter;if(g&&g.count){var e=function(p){g.count({path:p,title:p,event:true});};e('visit/day');if(nw)e('visit/new');e('visit/gap/'+gp);L.setItem('rn_v_day',k);L.setItem('rn_v_seen','1');return;}if(++n<40)setTimeout(go,250);})();}catch(e){}})();</script><script>try{var t=localStorage.getItem('rn_theme');if(t==='paper')t='white';if(t==='white'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}try{decodeURIComponent(location.hash)}catch(e){try{history.replaceState(history.state,'',location.pathname+location.search)}catch(e2){}}</script><link rel="icon" href="icon.svg" type="image/svg+xml"><meta name="description" content="보낸 피드백이 반영됐는지 제보 시각으로 확인"><meta property="og:type" content="website"><meta property="og:site_name" content="초등 임용 정리 노트"><meta property="og:title" content="처리 현황 · 초등 임용 정리 노트"><meta property="og:description" content="보낸 피드백이 반영됐는지 제보 시각으로 확인"><meta property="og:url" content="https://imgostudy.github.io/review-notes/status.html">
 <link rel="stylesheet" href="kit.css?v=fe19b947">
 <style>
 
@@ -39,10 +39,11 @@ body{margin:0;background:var(--bg);color:var(--label);}
 .fs-chip.fs-review{color:var(--wait);background:var(--wait-bg);}
 .fs-chip.fs-held{color:var(--sec);background:var(--fill);}
 .fs-chip.fs-thx{background:var(--fill);}
-.fs-chip.fs-new,.fs-chip.fs-ans{color:var(--acc);background:var(--new-bg);}
+.fs-chip.fs-new,.fs-chip.fs-ans{color:var(--new);background:var(--new-bg);}
+.fs-chip.fs-sent{color:var(--sec);background:transparent;box-shadow:inset 0 0 0 1px var(--sep);}   
 .fs-g.fs-ans{color:var(--label);}
 .fs-x .fs-g+.fs-ans{margin-top:10px;}
-.fs-ans b{display:block;font-size:13px;line-height:18px;font-weight:600;color:var(--acc);margin-bottom:2px;}
+.fs-ans b{display:block;font-size:13px;line-height:18px;font-weight:600;color:var(--new);margin-bottom:2px;}
 .fs-ans span{display:block;}
 .fs-list .fs-only-mine{display:none;}
 .fs-seg{display:flex;background:var(--fill);border-radius:9px;padding:2px;margin:0 0 12px;}
@@ -59,9 +60,10 @@ body{margin:0;background:var(--bg);color:var(--label);}
 .fs-more{display:block;width:100%;border:0;background:none;color:var(--acc);font:inherit;font-size:15px;padding:14px 0 4px;cursor:pointer;}
 .fs-empty{padding:20px;color:var(--sec);text-align:center;}
 .fs-cap{font-size:13px;line-height:18px;color:var(--sec);margin:8px 20px 0;}
-:root{--new-bg:rgba(0,122,255,.12);--ok:#248A3D;--ok-bg:rgba(52,199,89,.14);--wait:#B25000;--wait-bg:rgba(255,149,0,.16);}
-:root[data-theme="dark"]{--new-bg:rgba(10,132,255,.2);--ok:#30D158;--ok-bg:rgba(48,209,88,.18);--wait:#FF9F0A;--wait-bg:rgba(255,159,10,.18);}
-@media (prefers-color-scheme:dark){:root:not([data-theme]){--new-bg:rgba(10,132,255,.2);--ok:#30D158;--ok-bg:rgba(48,209,88,.18);--wait:#FF9F0A;--wait-bg:rgba(255,159,10,.18);}}
+
+:root{--new:#0062CC;--new-bg:rgba(0,122,255,.12);--ok:#1F7A35;--ok-bg:rgba(52,199,89,.14);--wait:#A14800;--wait-bg:rgba(255,149,0,.16);}
+:root[data-theme="dark"]{--new:#409CFF;--new-bg:rgba(10,132,255,.2);--ok:#30D158;--ok-bg:rgba(48,209,88,.18);--wait:#FF9F0A;--wait-bg:rgba(255,159,10,.18);}
+@media (prefers-color-scheme:dark){:root:not([data-theme]){--new:#409CFF;--new-bg:rgba(10,132,255,.2);--ok:#30D158;--ok-bg:rgba(48,209,88,.18);--wait:#FF9F0A;--wait-bg:rgba(255,159,10,.18);}}
 @media (max-width:430px){ .in{padding:28px 16px 56px;} .in h1{font-size:28px;line-height:34px;} }
 .fs-mine .fs-h{display:flex;justify-content:space-between;align-items:baseline;}
 .fs-id{font-variant-numeric:tabular-nums;letter-spacing:.04em;}
@@ -95,7 +97,7 @@ body{margin:0;background:var(--bg);color:var(--label);}
     L.innerHTML=(D.rows||[]).map(rowHTML).join('')+'<div class="fs-gone" hidden data-thx="'+e0((D.thx||[]).join(';'))+'" data-ks="'+e0((D.ks||[]).join(';'))+'"></div>';
     var at=document.querySelector('.fs-at'); if(at) at.textContent=D.at||'';
     start(D);
-  }).catch(function(){ L.innerHTML='<div class="fs-empty">불러오지 못함</div>'; });
+  }).catch(function(){ L.innerHTML='<div class="fs-empty" role="status">불러오지 못함</div>'; });
   function start(D){
   var arc=false;
   var W=180000, PEND_KEEP=7*864e5, MINE_KEEP=60*864e5, PAGE=20, now=Date.now(), tab='', shown=PAGE;
@@ -152,12 +154,13 @@ body{margin:0;background:var(--bg);color:var(--label);}
       if(em) em.insertAdjacentHTML('beforebegin',h); else L.insertAdjacentHTML('beforeend',h); }).catch(function(){ arc=false; }).then(function(){ more.disabled=false; render(); }); });
   var lastPend=[];
   function draw(pend){ lastPend=pend;
-    var all=pend.slice(); sent.forEach(function(m){ if(now-m.t<PEND_KEEP && !all.some(function(p){ return same(p,m); })) all.push(m); });
+    
+  var all=pend.map(function(p){ return {t:p.t,s:p.s,ok:1}; }); sent.forEach(function(m){ if(now-m.t<PEND_KEEP && !all.some(function(p){ return same(p,m); })) all.push({t:m.t,s:m.s}); });
     all=all.filter(function(p){ return !have.some(function(h){ return same(h,p); }); }).sort(function(a,b){ return b.t-a.t; });
     [].forEach.call(L.querySelectorAll('.fs-pend'),function(r){ r.remove(); });
     L.insertAdjacentHTML('afterbegin',all.map(function(p){ var d=new Date(p.t), h=d.getHours();
       return '<div class="fs-row fs-pend"><div class="fs-sum"><div class="fs-w"><span class="fs-t">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+(h<12?'오전':'오후')+' '+(h%12||12)+':'+('0'+d.getMinutes()).slice(-2)
-        +'</span><span class="fs-s">'+esc(p.s)+'</span></div><span class="fs-chip fs-new">접수됨</span><span class="fs-cv"></span></div></div>'; }).join(''));
+        +'</span><span class="fs-s">'+esc(p.s)+'</span></div>'+(p.ok?'<span class="fs-chip fs-new">접수됨</span>':'<span class="fs-chip fs-sent">보냄</span>')+'<span class="fs-cv"></span></div></div>'; }).join(''));
     [].forEach.call(L.querySelectorAll('.fs-pend'),function(r,i){ r._k=all[i]; });
     render();
   }
@@ -173,4 +176,4 @@ body{margin:0;background:var(--bg);color:var(--label);}
   }
 })();
 </script>
-<script src="rn-theme.js?v=140188e2"></script><script src="rn-dl.js?v=c1e22fd8"></script><script src="rn-sync.js?v=f0b27348"></script></html>
+<script src="rn-theme.js?v=1bdbf328"></script><script src="rn-dl.js?v=c1e22fd8"></script><script src="rn-sync.js?v=116fa787"></script></html>

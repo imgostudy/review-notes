@@ -40,8 +40,8 @@
     '<div class="rn-bd"><div class="rn-grp"><div class="rn-row"><span>과목</span><div class="v"></div></div>'+
     '<div class="rn-row"><span>단원</span><select class="rn-g"><option value="">선택 안 함</option></select></div>'+
     '<div class="rn-row"><span>절</span><select class="rn-p"><option value="">선택 안 함</option></select></div></div>'+
-    '<textarea class="rn-ta" placeholder="고칠 내용"></textarea>'+
-    '<button class="rn-send" type="button">보내기</button><div class="rn-ok">보냄 · <a href="status.html">처리 현황</a></div></div>';
+    '<textarea class="rn-ta" placeholder="고칠 내용" aria-label="고칠 내용"></textarea>'+
+    '<button class="rn-send" type="button">보내기</button><div class="rn-ok" role="status">보냄 · <a href="status.html">처리 현황</a></div></div>';
   document.body.appendChild(fab); document.body.appendChild(pan);
   var q=function(s){return pan.querySelector(s)}, selG=q('.rn-g'), selP=q('.rn-p'), ta=q('.rn-ta'), send=q('.rn-send'), ok=q('.rn-ok');
   q('.v').textContent=SUBJ;
@@ -56,7 +56,7 @@
     b.onclick=function(){ if(sel.length<2) return; pkFor=sel; pk.querySelector('b').textContent=sel.parentNode.querySelector('span').textContent;
       pk.querySelector('.rn-pk-ls').innerHTML=[].map.call(sel.options, function(o){ return '<button type="button" data-v="'+esc(o.value)+'" class="'+(o.value===sel.value?'on':'')+(o.value?'':' dim')+'"><span>'+esc(o.textContent)+'</span>'+CK+'</button>'; }).join('');
       pk.classList.add('on'); var on=pk.querySelector('.rn-pk-ls .on'); if(on) on.scrollIntoView({block:'center'}); }; });
-  function sync(){ [selG, selP].forEach(function(sel){ var b=sel._pv, o=sel.options[sel.selectedIndex]; b.firstChild.textContent=o?o.textContent:''; b.classList.toggle('set', !!sel.value); b.disabled=sel.length<2; }); }
+  function sync(){ [selG, selP].forEach(function(sel){ var b=sel._pv, o=sel.options[sel.selectedIndex]; b.firstChild.textContent=o?o.textContent:''; b.setAttribute('aria-label', sel.parentNode.querySelector('span').textContent+' '+(o?o.textContent:'')); b.classList.toggle('set', !!sel.value); b.disabled=sel.length<2; }); }
   pk.querySelector('.rn-pk-ls').onclick=function(e){ var b=e.target.closest('button'); if(!b||!pkFor) return; pkFor.value=b.dataset.v; if(pkFor===selG) fillP(); pk.classList.remove('on'); sync(); };
   pk.querySelector('.rn-x').onclick=function(){ pk.classList.remove('on'); };
   sync();
@@ -66,7 +66,7 @@
       if(t<=innerHeight*.3 && t>best){ best=t; gi=i; kn=x[1]; } }); });
     if(gi>=0){ selG.value=gi; fillP(); selP.value=kn; } sync(); }
   
-  var tip=function(btn,msg){ var t=document.querySelector('.rn-tip'); if(!t){ t=document.createElement('div'); t.className='rn-tip'; document.body.appendChild(t); } var r=btn.getBoundingClientRect(); t.textContent=msg; t.style.left=(r.left+r.width/2)+'px'; t.style.top=(r.top-10)+'px'; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('on'); },1800); }
+  var tip=function(btn,msg){ var t=document.querySelector('.rn-tip'); if(!t){ t=document.createElement('div'); t.className='rn-tip'; t.setAttribute('role','status'); document.body.appendChild(t); } var r=btn.getBoundingClientRect(); t.textContent=msg; t.style.left=(r.left+r.width/2)+'px'; t.style.top=(r.top-10)+'px'; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('on'); },1800); }
   function check(){}
   ta.oninput=check;
   function open(){ here(); document.body.classList.add('rn-open'); ok.style.display='none'; setTimeout(function(){ ta.focus(); }, 280); }

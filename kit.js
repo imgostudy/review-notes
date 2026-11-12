@@ -1217,6 +1217,3 @@ document.querySelectorAll('.mkf svg,.mkd svg,.converge>svg,.fork svg,.fig svg').
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(hang,80); });
   var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(hang,250); });
 })();
-
-/* 인쇄 = 늘 흰 바탕(다크·페이퍼여도) — 끝나면 원래대로 */
-(function(){var r=document.documentElement,k=null;addEventListener('beforeprint',function(){k=r.getAttribute('data-theme');r.dataset.theme='white';});addEventListener('afterprint',function(){if(k)r.dataset.theme=k;else r.removeAttribute('data-theme');});})();

@@ -1,7 +1,7 @@
 
 (function(){
   var Q=window.RN_QZ, main=document.querySelector('main.wrap'); if(!Q||!main) return;
-  var ids=[].map.call(document.querySelectorAll('aside .tgrp>summary a[href^="#"]'), function(a){ return decodeURIComponent(a.getAttribute('href').slice(1)); });
+  var ids=[].map.call(document.querySelectorAll('aside .tgrp>summary a[href^="#"],aside .tgrp.one>a[href^="#"]'), function(a){ return decodeURIComponent(a.getAttribute('href').slice(1)); });
   
   var css=document.createElement('style'); css.textContent=
     '.rn-qz{margin:22px 0 34px;padding-top:10px;border-top:.5px solid var(--sep,var(--hair));display:flex;justify-content:flex-end;width:100%;grid-column:1/-1;scroll-margin-top:96px}'+

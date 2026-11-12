@@ -492,6 +492,8 @@
       s.querySelectorAll(':scope > .pg > .blk.cell:not(.full)').forEach(function(c){ c.style.gridColumn='span 2'; });
     });
      
+    if(BAKEFIT) BAKEFIT();
+     
     main.querySelectorAll('.grps .grp').forEach(function(g){ g._h=g.getBoundingClientRect().height; });
      
     main.querySelectorAll('.blk.cell .bracket, .blk.cell .kids, .blk.hrow .bracket, .blk.hrow .kids, .blk.nolab .bracket, .blk.nolab .kids').forEach(function(x){
@@ -910,17 +912,30 @@
     if(LAYOUT){ var b=bpOf(); if(!b) return false; var sn=LAYOUT[b]; if(sn){ if(!applied || applied!==sn) applySnap(sn); if(eqAlignFn) eqAlignFn(); return true; } }
     relayout(); return true;
   };
-  place();
+   
+  var BAKEFIT=null;
+  if(!BAKE) place();
   if(BAKE){
      
     document.documentElement.classList.add('baking');
-    var dump=function(){ relayout(); var pre=document.getElementById('pan-bake') || document.body.appendChild(Object.assign(document.createElement('pre'), {id:'pan-bake'})); pre.style.display='none'; pre.textContent=JSON.stringify({bp:bpOf(), w:document.documentElement.clientWidth, layout:snapshot()}); };
+    var bakeFit=function(){
+      document.querySelectorAll('main .hng').forEach(function(d){ d.style.paddingLeft=''; d.style.textIndent=''; d.classList.remove('hng'); });
+      document.querySelectorAll('.converge > svg').forEach(function(v){ v.style.height='0px'; v.style.marginTop='0px'; });
+      document.querySelectorAll('.forkdown > .root').forEach(function(r){ r.style.marginLeft=''; });
+      var F=window.PAN_FIT||{}; ['fork','brace','tick'].forEach(function(k){ if(F[k]) F[k](); });
+    };
+    var dump=function(){
+      BAKEFIT=bakeFit; relayout(); BAKEFIT=null;
+       
+      var fz={loaded:0, loading:0, error:0, main:0}, fam=(getComputedStyle(document.body).fontFamily.split(',')[0]||'').replace(/["']/g,'').trim();
+      if(document.fonts) document.fonts.forEach(function(f){ if(fz[f.status]!=null) fz[f.status]++; if(f.status==='loaded' && f.family.replace(/["']/g,'').trim()===fam) fz.main++; });
+      var pre=document.getElementById('pan-bake') || document.body.appendChild(Object.assign(document.createElement('pre'), {id:'pan-bake'})); pre.style.display='none'; pre.textContent=JSON.stringify({bp:bpOf(), w:document.documentElement.clientWidth, fonts:fz, layout:snapshot()}); };
     window.addEventListener('load', function(){ if(document.fonts && document.fonts.ready) document.fonts.ready.then(dump); else dump(); });
   }
 
   var layKey=function(){ if(LAYOUT) return 'bp'+bpOf(); var mw3=document.querySelector('main.wrap'); return String(mw3 ? mw3.clientWidth : 0); };
   var lastKey=layKey();    
-  var t=null, busy=false; function again(force){ var k=layKey(); if(force!==true && k===lastKey) return; lastKey=k; place(); busy=true; window.dispatchEvent(new Event('resize')); busy=false; }
+  var t=null, busy=false; function again(force){ if(BAKE) return;     var k=layKey(); if(force!==true && k===lastKey) return; lastKey=k; place(); busy=true; window.dispatchEvent(new Event('resize')); busy=false; }
   window.addEventListener('load', function(){ again(true); });    
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ again(true); });
   window.addEventListener('resize', function(){ if(busy) return; clearTimeout(t); t=setTimeout(again,120); });
@@ -961,6 +976,7 @@
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   window.addEventListener('load', fit);
   window.addEventListener('resize', fit);
+  (window.PAN_FIT=window.PAN_FIT||{}).fork=fit;    
   fit();
 })();
 
@@ -1063,6 +1079,7 @@
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(all);
   window.addEventListener('load', all);
   window.addEventListener('resize', all);
+  (window.PAN_FIT=window.PAN_FIT||{}).brace=all;
   all();
 })();
 
@@ -1194,6 +1211,7 @@ document.querySelectorAll('.mkf svg,.mkd svg,.converge>svg,.fork svg,.fig svg').
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fitTicks);
   else fitTicks();
+  (window.PAN_FIT=window.PAN_FIT||{}).tick=fitTicks;
   window.addEventListener('load',fitTicks);
   var t; window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(fitTicks,150);});
 })();
